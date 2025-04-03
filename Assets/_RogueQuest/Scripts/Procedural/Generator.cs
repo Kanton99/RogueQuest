@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine.Tilemaps;
 using UnityEditor;
 using System;
+using System.Linq;
+using System.Xml.Serialization;
 
 public class Generator : MonoBehaviour
 {
@@ -34,11 +36,17 @@ public class Generator : MonoBehaviour
 	private	List<Vector2Int> positionsToPlace = new List<Vector2Int>();
 	private List<Vector2Int> positionsUsed = new List<Vector2Int>();
 
-	[ContextMenu("Generate")]
-	[CustomEditor(typeof(Generator))]
-	private void Generate()
+	[ContextMenu("Generate fully")]
+	private void GenerateLevelSteps(){
+		GenerateInitialLayout();
+		//CleanUp();
+		PlaceRooms();
+	}
+
+
+	[ContextMenu("Generate Layout")]
+	private void GenerateInitialLayout()
 	{
-		map.GetComponent<Tilemap>().ClearAllTiles();
 		roomMap = new Dictionary<Vector2Int, Room>();
 		//initialize the roomMap with null values of size roomCount x roomCount
 		positionsToPlace.Clear();
@@ -71,31 +79,77 @@ public class Generator : MonoBehaviour
 				positionsToPlace.Add(positionToBeAdded);
 			}
 		}
+	}
 
-		//from the 2D array, place the rooms in the map
+	[ContextMenu("Place Rooms")]
+	private void PlaceRooms(){
+		map.GetComponent<Tilemap>().ClearAllTiles();
 		foreach(var posAndRoom in roomMap)
 		{
 			Room room = posAndRoom.Value;
+			Vector2Int pos = posAndRoom.Key;
 			if (room != null)
 			{
-				PlaceRoom(room.prefab, posAndRoom.Key.x*posAndRoom.Value.size.x, posAndRoom.Key.y*posAndRoom.Value.size.y);
+				PlaceRoom(room.prefab, pos.x*room.size.x, pos.y*room.size.y);
 			}
 		}
 	}
 
-	private bool IsValidPosition(Vector2Int positionToBeAdded)
+	[ContextMenu("CleanUp")]
+	private void CleanUp()
 	{
-		throw new NotImplementedException();
+		if (positionsToPlace.Count > 0)
+		{
+			for (int i = 0; i < positionsToPlace.Count; i++)
+			{
+				Vector2Int pos = positionsToPlace[i];
+				foreach (var dirVec in directionVectors)
+				{
+					Vector2Int neighborPos = pos + dirVec.Value;
+					if (roomMap.ContainsKey(neighborPos))
+					{
+						Room[] possibleRooms = GetPossibleRooms(neighborPos);
+						if (possibleRooms.Length == 0) continue;
+	
+						possibleRooms = possibleRooms.Where(r => 
+						{
+							//Get all neighboring rooms, null if there are none
+							Room[] neighbors = new Room[4];
+							foreach (var dir in directionVectors)
+							{
+								Vector2Int neighborPos2 = pos + dir.Value;
+								if (roomMap.ContainsKey(neighborPos2))
+								{
+									neighbors[(int)dir.Key] = roomMap[neighborPos2];
+								}
+							}
+
+							return false;
+						}
+						).ToArray();
+					}
+				}
+			}
+		}
 	}
 
 	private Room SelectRoom(Vector2Int newPos)
 	{
+		Room[] possibleRooms = GetPossibleRooms(newPos);
+		//return a random room from the list of possible rooms
+		if (possibleRooms.Length == 0) return null;
+
+		int randomIndex = UnityEngine.Random.Range(0, possibleRooms.Length);
+		return possibleRooms[randomIndex];
+	}
+
+	private Room[] GetPossibleRooms(Vector2Int pos){
 		//Get rooms around the position in the 2D array
 		List<Direction> neededDirections = new List<Direction>();
 		//loop through the directionVector dictionary
 		foreach (var direction in directionVectors)
 		{
-			Vector2Int neighborPos = newPos + direction.Value;
+			Vector2Int neighborPos = pos + direction.Value;
 			Room room = roomMap.GetValueOrDefault(neighborPos,null);
 			if (room != null)
 			{
@@ -122,13 +176,7 @@ public class Generator : MonoBehaviour
 			}
 		}
 
-		//return a random room from the list of possible rooms
-		if (possibleRooms.Count == 0)
-		{
-			return null;
-		}
-		int randomIndex = UnityEngine.Random.Range(0, possibleRooms.Count);
-		return possibleRooms[randomIndex];
+		return possibleRooms.ToArray();
 	}
 
 	void PlaceRoom(GameObject room, int x, int y)
