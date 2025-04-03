@@ -2,17 +2,18 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Tilemaps;
 using UnityEditor;
+using System;
 
 public class Generator : MonoBehaviour
 {
-	public List<GameObject> rooms = new List<GameObject>();
+	public Room[] rooms;
 	public GameObject map;
 
 	[Header("Room Settings")]
 	public Vector2Int ROOM_SIZE = new Vector2Int(16, 16);
-	public Vector2Int MAP_SIZE = new Vector2Int(2, 1);
+	public int roomCount = 10;
 
-	private Dictionary<Direction, Direction> oppositeDirection = new Dictionary<Direction, Direction>
+	private static Dictionary<Direction, Direction> oppositeDirection = new Dictionary<Direction, Direction>
 	{
 		{Direction.Up, Direction.Down},
 		{Direction.Down, Direction.Up},
@@ -20,16 +21,114 @@ public class Generator : MonoBehaviour
 		{Direction.Right, Direction.Left}
 	};
 
+	private static Dictionary<Direction, Vector2Int> directionVectors = new Dictionary<Direction, Vector2Int>
+	{
+		{Direction.Up, Vector2Int.up},
+		{Direction.Down, Vector2Int.down},
+		{Direction.Left, Vector2Int.left},
+		{Direction.Right, Vector2Int.right}
+	};
+
+
+	private	Dictionary<Vector2Int, Room> roomMap;
+	private	List<Vector2Int> positionsToPlace = new List<Vector2Int>();
+	private List<Vector2Int> positionsUsed = new List<Vector2Int>();
+
 	[ContextMenu("Generate")]
 	[CustomEditor(typeof(Generator))]
 	private void Generate()
 	{
 		map.GetComponent<Tilemap>().ClearAllTiles();
+		roomMap = new Dictionary<Vector2Int, Room>();
+		//initialize the roomMap with null values of size roomCount x roomCount
+		positionsToPlace.Clear();
+		positionsUsed.Clear();
+
+
 		//Generate a 2D array of rooms
-		Room[,] roomMap = new Room[MAP_SIZE.x, MAP_SIZE.y];
-		List<Vector2Int> positionsToPlace = new List<Vector2Int>();
+		positionsToPlace.Add(new Vector2Int(0, 0));
+
+		for(int i = 0; i<roomCount; i++){
+			if(positionsToPlace.Count == 0) break;
+
+			int nextPosIter = UnityEngine.Random.Range(0, positionsToPlace.Count >= 5 ? 5 : positionsToPlace.Count);
+
+			var newPos = positionsToPlace[nextPosIter];
+			positionsToPlace.RemoveAt(0);
+			if(positionsUsed.Contains(newPos)) {
+				i--;
+				continue;	
+			}
+			positionsUsed.Add(newPos);
+			Room room = SelectRoom(newPos);
+			if(room == null) continue;
+			roomMap.Add(newPos, room);
+			Direction[] directions = room.direction;
+			foreach (Direction direction in directions)
+			{
+				Vector2Int positionToBeAdded = newPos + directionVectors[direction];
+				if(positionsUsed.Contains(positionToBeAdded) || positionsToPlace.Contains(positionToBeAdded)) continue;
+				positionsToPlace.Add(positionToBeAdded);
+			}
+		}
 
 		//from the 2D array, place the rooms in the map
+		foreach(var posAndRoom in roomMap)
+		{
+			Room room = posAndRoom.Value;
+			if (room != null)
+			{
+				PlaceRoom(room.prefab, posAndRoom.Key.x*posAndRoom.Value.size.x, posAndRoom.Key.y*posAndRoom.Value.size.y);
+			}
+		}
+	}
+
+	private bool IsValidPosition(Vector2Int positionToBeAdded)
+	{
+		throw new NotImplementedException();
+	}
+
+	private Room SelectRoom(Vector2Int newPos)
+	{
+		//Get rooms around the position in the 2D array
+		List<Direction> neededDirections = new List<Direction>();
+		//loop through the directionVector dictionary
+		foreach (var direction in directionVectors)
+		{
+			Vector2Int neighborPos = newPos + direction.Value;
+			Room room = roomMap.GetValueOrDefault(neighborPos,null);
+			if (room != null)
+			{
+				neededDirections.Add(oppositeDirection[direction.Key]);
+			}
+		}
+
+		//Get a random room from the list of rooms that has the needed directions
+		List<Room> possibleRooms = new List<Room>();
+		foreach (Room room in rooms)
+		{
+			bool hasAllDirections = true;
+			foreach (Direction direction in neededDirections)
+			{
+				if (!Array.Exists(room.direction, d => d==direction))
+				{
+					hasAllDirections = false;
+					break;
+				}
+			}
+			if (hasAllDirections)
+			{
+				possibleRooms.Add(room);
+			}
+		}
+
+		//return a random room from the list of possible rooms
+		if (possibleRooms.Count == 0)
+		{
+			return null;
+		}
+		int randomIndex = UnityEngine.Random.Range(0, possibleRooms.Count);
+		return possibleRooms[randomIndex];
 	}
 
 	void PlaceRoom(GameObject room, int x, int y)
@@ -53,84 +152,11 @@ public class Generator : MonoBehaviour
 			}
 		}
 	}
-
-	GameObject SelectRoom(GameObject prevRoom, Vector2Int prevPosition, Vector2Int newPosition)
-	{
-		if(prevRoom == null)
-		{
-			return rooms[Random.Range(0, rooms.Count)];
-		}
-		var directions = FindConnections(prevRoom);
-		List<GameObject> validRooms = new List<GameObject>();
-		foreach (var room in rooms)
-		{
-			var roomDirections = FindConnections(room);
-			foreach (var direction in directions)
-			{
-				if (System.Array.Exists(roomDirections, d => d == oppositeDirection[direction]))
-				{
-					validRooms.Add(room);
-					break;
-				}
-			}
-		}
-		if (validRooms.Count == 0)
-		{
-			//return rooms[Random.Range(0, rooms.Count)];
-		}
-		return validRooms[Random.Range(0, validRooms.Count)];
-	}
-
-	Direction[] FindConnections(GameObject room)
-	{
-		//check the room for holes in the outer walls
-		Tilemap tilemap = room.GetComponent<Tilemap>();
-		BoundsInt bounds = tilemap.cellBounds;
-		var size = tilemap.size;
-		TileBase[] roomTiles = tilemap.GetTilesBlock(bounds);
-
-		List<Direction> connections = new List<Direction>();
-		for (int x = 0; x < bounds.size.x; x++)
-		{
-			if(roomTiles[x] == null && roomTiles[x+1] == null)
-			{
-				connections.Add(Direction.Up);
-			}
-			if (roomTiles[x + (bounds.size.y - 1) * bounds.size.x] == null &&
-				roomTiles[(x+1) + (bounds.size.y - 1) * bounds.size.x] == null)
-			{
-				connections.Add(Direction.Down);
-			}
-		}
-
-		for (int y = 0; y < bounds.size.y; y++)
-		{
-			if (roomTiles[y * bounds.size.x] == null &&
-				roomTiles[(y+1) * bounds.size.x] == null)
-			{
-				connections.Add(Direction.Left);
-			}
-			if (roomTiles[(bounds.size.x - 1) + y * bounds.size.x] == null && roomTiles[(bounds.size.x - 1) + y * bounds.size.x] == null)
-			{
-				connections.Add(Direction.Right);
-			}
-		}
-
-		return connections.ToArray();
-	}
-
-
-	private enum Direction
-	{
-		Up,
-		Down,
-		Left,
-		Right
-	}
-
-	private struct Room
-	{
-		public GameObject room;
-		public Direction[] accesses;
-	}
+}
+public enum Direction
+{
+	Up,
+	Down,
+	Left,
+	Right
 }
