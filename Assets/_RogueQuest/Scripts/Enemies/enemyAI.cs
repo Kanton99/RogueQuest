@@ -14,17 +14,35 @@ public class EnemyAI : MonoBehaviour
     [Header("Detection Settings")]
     [SerializeField] private float detectionRange = 5.0f;
     [SerializeField] private float attackRange = 1.5f;
+    [SerializeField] private LayerMask wallLayerMask; // LayerMask pour les murs
 
     [Header("Player Reference")]
     [SerializeField] public Transform playerTransform; // Référence au transform du joueur
+
+    [Header("Enemy Type")]
+    [SerializeField] private EnemyType enemyType = EnemyType.SmallFry; // Type d'ennemi
 
     private Vector3 currentDirection = Vector3.right; // Passé en private
     private float groundCheckDistance = 1.0f; // Passé en private
 
     void Start()
     {
-        // Initialiser avec l'état de patrouille
-        ChangeState(new PatrolState(this));
+        // Initialiser avec l'état approprié en fonction du type d'ennemi
+        switch (enemyType)
+        {
+            case EnemyType.SmallFry:
+                ChangeState(new PatrolState(this));
+                break;
+            case EnemyType.Elite:
+                ChangeState(new ChaseState(this));
+                break;
+            case EnemyType.Boss:
+                ChangeState(new AttackState(this));
+                break;
+            default:
+                ChangeState(new PatrolState(this));
+                break;
+        }
     }
 
     void Update()
@@ -57,6 +75,7 @@ public class EnemyAI : MonoBehaviour
     public float AttackRange => attackRange;
     public Vector3 CurrentDirection => currentDirection; // Ajouté un getter pour currentDirection
     public float GroundCheckDistance => groundCheckDistance; // Ajouté un getter pour groundCheckDistance
+    public LayerMask WallLayerMask => wallLayerMask; // Ajouté un getter pour wallLayerMask
 
     // Définir la direction actuelle de l'ennemi
     public void SetCurrentDirection(Vector3 direction)
@@ -75,4 +94,10 @@ public class EnemyAI : MonoBehaviour
 
         Debug.DrawRay((Vector3.down * 0.35f) + transform.position, currentDirection * DetectionRange, Color.red); // Ajout d'un raycast visible pour le débogage
     }
+}
+public enum EnemyType
+{
+    SmallFry,
+    Elite,
+    Boss
 }

@@ -43,14 +43,14 @@ public class ChaseState : EnemyState
     // Détecter les obstacles
     private bool DetectObstacle()
     {
-        RaycastHit2D hit = Physics2D.Raycast(enemyAI.transform.position, Vector2.right * enemyAI.transform.localScale.x, enemyAI.DetectionRange);
+        RaycastHit2D hit = Physics2D.Raycast(enemyAI.transform.position, Vector2.right * enemyAI.transform.localScale.x, enemyAI.DetectionRange, enemyAI.WallLayerMask);
         return hit.collider != null && hit.collider.CompareTag("Obstacle");
     }
 
     // Vérifier si le joueur est à portée d'attaque
     private bool IsPlayerInRange()
     {
-        RaycastHit2D hit = Physics2D.Raycast((Vector3.down * 0.35f) + enemyAI.transform.position, enemyAI.CurrentDirection, enemyAI.AttackRange);
+        RaycastHit2D hit = Physics2D.Raycast((Vector3.down * 0.35f) + enemyAI.transform.position, enemyAI.CurrentDirection, enemyAI.AttackRange, enemyAI.WallLayerMask);
         return hit.collider != null && hit.collider.CompareTag("Player");
     }
 }
