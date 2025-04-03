@@ -1,162 +1,25 @@
 using UnityEngine;
 
-// Classe de base pour les états de l'ennemi
-public abstract class EnemyState
-{
-    protected EnemyAI enemyAI;
-
-    public EnemyState(EnemyAI enemyAI)
-    {
-        this.enemyAI = enemyAI;
-    }
-
-    public abstract void Enter();
-    public abstract void Execute();
-    public abstract void Exit();
-}
-
-// État de patrouille
-public class PatrolState : EnemyState
-{
-    public PatrolState(EnemyAI enemyAI) : base(enemyAI) { }
-
-    public override void Enter()
-    {
-        Debug.Log("Entering Patrol State");
-    }
-
-    public override void Execute()
-    {
-        // Logique de patrouille
-        Debug.Log("Patrolling...");
-
-        // Détection du joueur
-        if (DetectPlayer())
-        {
-            enemyAI.ChangeState(new ChaseState(enemyAI));
-        }
-    }
-
-    public override void Exit()
-    {
-        Debug.Log("Exiting Patrol State");
-    }
-
-    private bool DetectPlayer()
-    {
-        RaycastHit hit;
-        if (Physics.Raycast(enemyAI.transform.position, enemyAI.transform.forward, out hit, enemyAI.DetectionRange))
-        {
-            if (hit.collider.CompareTag("Player"))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-}
-
-// État de poursuite
-public class ChaseState : EnemyState
-{
-    public ChaseState(EnemyAI enemyAI) : base(enemyAI) { }
-
-    public override void Enter()
-    {
-        Debug.Log("Entering Chase State");
-    }
-
-    public override void Execute()
-    {
-        // Logique de poursuite
-        Debug.Log("Chasing...");
-
-        // Détection des obstacles
-        if (DetectObstacle())
-        {
-            // Logique pour éviter l'obstacle
-            Debug.Log("Obstacle detected!");
-        }
-
-        // Détection du joueur à portée d'attaque
-        if (IsPlayerInRange())
-        {
-            enemyAI.ChangeState(new AttackState(enemyAI));
-        }
-    }
-
-    public override void Exit()
-    {
-        Debug.Log("Exiting Chase State");
-    }
-
-    private bool DetectObstacle()
-    {
-        RaycastHit hit;
-        if (Physics.Raycast(enemyAI.transform.position, enemyAI.transform.forward, out hit, enemyAI.DetectionRange))
-        {
-            if (hit.collider.CompareTag("Obstacle"))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private bool IsPlayerInRange()
-    {
-        RaycastHit hit;
-        if (Physics.Raycast(enemyAI.transform.position, enemyAI.transform.forward, out hit, enemyAI.AttackRange))
-        {
-            if (hit.collider.CompareTag("Player"))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-}
-
-// État d'attaque
-public class AttackState : EnemyState
-{
-    public AttackState(EnemyAI enemyAI) : base(enemyAI) { }
-
-    public override void Enter()
-    {
-        Debug.Log("Entering Attack State");
-    }
-
-    public override void Execute()
-    {
-        // Logique d'attaque
-        Debug.Log("Attacking...");
-
-        // Attaquer le joueur
-        AttackPlayer();
-    }
-
-    public override void Exit()
-    {
-        Debug.Log("Exiting Attack State");
-    }
-
-    private void AttackPlayer()
-    {
-        // Logique pour infliger des dégâts au joueur
-        Debug.Log("Player attacked!");
-    }
-}
-
 // Classe de gestion de l'IA de l'ennemi
 public class EnemyAI : MonoBehaviour
 {
     private EnemyState currentState;
 
+    [Header("Patrol Settings")]
     [SerializeField] private float patrolSpeed = 2.0f;
+
+    [Header("Chase Settings")]
     [SerializeField] private float chaseSpeed = 4.0f;
+
+    [Header("Detection Settings")]
     [SerializeField] private float detectionRange = 5.0f;
     [SerializeField] private float attackRange = 1.5f;
+
+    [Header("Player Reference")]
+    [SerializeField] public Transform playerTransform; // Référence au transform du joueur
+
+    private Vector3 currentDirection = Vector3.right; // Passé en private
+    private float groundCheckDistance = 1.0f; // Passé en private
 
     void Start()
     {
@@ -172,6 +35,7 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
+    // Changer l'état actuel de l'ennemi
     public void ChangeState(EnemyState newState)
     {
         if (currentState != null)
@@ -191,4 +55,24 @@ public class EnemyAI : MonoBehaviour
     public float ChaseSpeed => chaseSpeed;
     public float DetectionRange => detectionRange;
     public float AttackRange => attackRange;
+    public Vector3 CurrentDirection => currentDirection; // Ajouté un getter pour currentDirection
+    public float GroundCheckDistance => groundCheckDistance; // Ajouté un getter pour groundCheckDistance
+
+    // Définir la direction actuelle de l'ennemi
+    public void SetCurrentDirection(Vector3 direction)
+    {
+        currentDirection = direction;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.cyan;
+
+        Vector2 origin = transform.position + currentDirection * 0.5f; // Vérifier légèrement devant l'ennemi
+        Gizmos.DrawLine(origin, origin + Vector2.down * groundCheckDistance);
+
+        Gizmos.color = Color.red;
+
+        Debug.DrawRay((Vector3.down * 0.35f) + transform.position, currentDirection * DetectionRange, Color.red); // Ajout d'un raycast visible pour le débogage
+    }
 }
