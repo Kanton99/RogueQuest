@@ -3,21 +3,18 @@ using UnityEngine;
 public class CameraFollow : MonoBehaviour
 {
     [Header("Target to Follow")]
-    public GameObject Player;
+    public Transform playerTransform;
 
     [Header("Offset Settings")]
     public Vector3 positionOffset;
     public float timeOffset;
 
-    private Transform playerTransform;
+    
     private Vector3 velocity = Vector3.zero;
 
     private void Start()
     {
-        if (Player != null)
-        {
-            playerTransform = Player.transform;
-        }
+
     }
 
     // Update is called once per frame
