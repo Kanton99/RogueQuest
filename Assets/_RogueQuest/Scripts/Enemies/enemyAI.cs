@@ -34,14 +34,12 @@ public class EnemyAI : MonoBehaviour
                 ChangeState(new PatrolState(this));
                 break;
             case EnemyType.Elite:
-                ChangeState(new ChaseState(this));
-                break;
-            case EnemyType.Boss:
-                ChangeState(new AttackState(this));
-                break;
-            default:
                 ChangeState(new PatrolState(this));
                 break;
+            case EnemyType.Boss:
+                ChangeState(new IdleState(this));
+                break;
+
         }
     }
 
