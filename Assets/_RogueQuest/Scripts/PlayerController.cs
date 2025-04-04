@@ -11,12 +11,6 @@ public class PlayerController : MonoBehaviour
     public float dashCooldown = 3f; // Durée minimale entre deux dashs
     private float lastDashTime = -Mathf.Infinity; // Temps du dernier dash, initialisé à -∞
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
     // Update is called once per frame
     void Update()
     {
