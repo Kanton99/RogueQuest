@@ -10,12 +10,12 @@ public class ShieldEffect : Effect
 
     public override void Apply(EntityStats target)
     {
-        target.ApplyShield(shieldValue, duration);
+        target.ApplyShieldEffect(this);
     }
 
     public override void Remove(EntityStats target)
     {
-        target.RemoveShield();
+        target.RemoveShieldEffect(this);
     }
 
     public int AbsorbDamage(int damage)

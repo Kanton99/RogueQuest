@@ -111,15 +111,23 @@ public class EntityStats : MonoBehaviour
         activeEffects.Remove(modifier);
     }
 
-    public void ApplyShield(int value, float duration)
+    public void ApplyShieldEffect(ShieldEffect shieldEffect)
     {
-        currentShield = new ShieldEffect(value, duration);
-        ApplyEffect(currentShield);
+        currentShield = shieldEffect;
     }
 
-    public void RemoveShield()
+    public void RemoveShieldEffect(ShieldEffect shieldEffect)
     {
-        currentShield = null;
+        if (currentShield == shieldEffect)
+        {
+            currentShield = null;
+        }
+    }
+
+    public void ApplyShield(int value, float duration)
+    {
+        ShieldEffect shieldEffect = new ShieldEffect(value, duration);
+        ApplyEffect(shieldEffect);
     }
 
     public void TakeDamage(int damage)
