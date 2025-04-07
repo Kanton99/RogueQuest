@@ -12,7 +12,6 @@ public class EntityStats : MonoBehaviour
     public int currentHealth;
 
     private List<Effect> activeEffects = new List<Effect>();
-    private ShieldEffect currentShield;
 
     private void Awake()
     {
@@ -31,11 +30,6 @@ public class EntityStats : MonoBehaviour
                     activeEffects.RemoveAt(i);
                 }
             }
-        }
-
-        if (currentShield != null && currentShield.Update(Time.deltaTime))
-        {
-            currentShield = null;
         }
     }
 
@@ -111,37 +105,42 @@ public class EntityStats : MonoBehaviour
         activeEffects.Remove(modifier);
     }
 
-    public void ApplyShieldEffect(ShieldEffect shieldEffect)
+    public void ApplyTemporaryModifier(StatType statType, float value, float duration)
     {
-        currentShield = shieldEffect;
+        StatModifier modifier = new StatModifier(statType, value, duration);
+        ApplyEffect(modifier);
     }
 
-    public void RemoveShieldEffect(ShieldEffect shieldEffect)
+    public void ApplyPermanentModifier(StatType statType, float value)
     {
-        if (currentShield == shieldEffect)
-        {
-            currentShield = null;
-        }
+        StatModifier modifier = new StatModifier(statType, value, float.MaxValue);
+        ApplyEffect(modifier);
     }
 
-    public void ApplyShield(int value, float duration)
+    public void ApplySpeedBoost(float value, float duration)
     {
-        ShieldEffect shieldEffect = new ShieldEffect(value, duration);
-        ApplyEffect(shieldEffect);
+        ApplyTemporaryModifier(StatType.MoveSpeed, value, duration);
+    }
+
+    public void ApplyAttackBoost(float value, float duration)
+    {
+        ApplyTemporaryModifier(StatType.Attack, value, duration);
+    }
+
+    public void ApplyDefenseBoost(float value, float duration)
+    {
+        ApplyTemporaryModifier(StatType.Defense, value, duration);
+    }
+
+    public void ApplyHealthBoost(float value, float duration)
+    {
+        ApplyTemporaryModifier(StatType.MaxHealth, value, duration);
     }
 
     public void TakeDamage(int damage)
     {
-        if (currentShield != null)
-        {
-            int absorbed = currentShield.AbsorbDamage(damage);
-            damage -= absorbed;
-
-            Debug.Log($"Bouclier a absorbé {absorbed} dégâts.");
-        }
-
         int defense = GetDefense();
-        int damageTaken = Mathf.Max(damage - defense, 1);
+        int damageTaken = Mathf.Max(damage - defense, 0);
         currentHealth -= damageTaken;
 
         Debug.Log($"Dégâts restants : {damageTaken}. Vie : {currentHealth}");
