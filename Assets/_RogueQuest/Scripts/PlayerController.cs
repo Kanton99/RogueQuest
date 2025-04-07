@@ -6,10 +6,13 @@ public class PlayerController : MonoBehaviour
     public Rigidbody2D rb;
     public bool isJumping = false;
     public float jumpForce;
-    private bool isGrounded = true; // Ajout d'une variable pour vérifier si le joueur est au sol
+
+    //private bool isGrounded = true; // Ajout d'une variable pour vérifier si le joueur est au sol
     public float dashForce = 10f; // Ajout d'une variable pour la puissance du dash
     public float dashCooldown = 3f; // Durée minimale entre deux dashs
     private float lastDashTime = -Mathf.Infinity; // Temps du dernier dash, initialisé à -∞
+    public ContactFilter2D ContactFilter;
+    public bool IsGrounded => rb.IsTouching(ContactFilter);
 
     // Update is called once per frame
     void Update()
@@ -28,7 +31,7 @@ public class PlayerController : MonoBehaviour
         Vector3 movement = new Vector3(horizontalInput, 0f, 0f) * moveSpeed * Time.deltaTime;
         transform.Translate(movement);
 
-        if (Input.GetButtonDown("Jump") && isGrounded) // Vérifie si le joueur est au sol avant de sauter
+        if (Input.GetButtonDown("Jump") && IsGrounded) // Vérifie si le joueur est au sol avant de sauter
         {
             isJumping = true;
             Debug.Log("je saute");
@@ -38,7 +41,7 @@ public class PlayerController : MonoBehaviour
         {
             rb.AddForce(new Vector2(0f, jumpForce));
             isJumping = false;
-            isGrounded = false; // Le joueur n'est plus au sol après un saut
+            //isGrounded = false; // Le joueur n'est plus au sol après un saut
         }
 
         // Dash avec cooldown
@@ -55,7 +58,7 @@ public class PlayerController : MonoBehaviour
         // Vérifie si le joueur touche le sol
         if (collision.contacts[0].normal.y > 0.5f)
         {
-            isGrounded = true; // Réinitialise l'état au sol
+            //isGrounded = true; // Réinitialise l'état au sol
         }
     }
 }
