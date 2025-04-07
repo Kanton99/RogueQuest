@@ -8,24 +8,24 @@ public enum StatType
     MaxHealth
 }
 
-public class StatModifier
+public class StatModifier : Effect
 {
     public StatType statType;
     public float value;
-    public float duration; // Durée en secondes
-    private float timer;
 
-    public StatModifier(StatType statType, float value, float duration)
+    public StatModifier(StatType statType, float value, float duration) : base(duration)
     {
         this.statType = statType;
         this.value = value;
-        this.duration = duration;
-        this.timer = 0f;
     }
 
-    public bool UpdateTimer(float deltaTime)
+    public override void Apply(EntityStats target)
     {
-        timer += deltaTime;
-        return timer >= duration;
+        target.AddStatModifier(this);
+    }
+
+    public override void Remove(EntityStats target)
+    {
+        target.RemoveStatModifier(this);
     }
 }

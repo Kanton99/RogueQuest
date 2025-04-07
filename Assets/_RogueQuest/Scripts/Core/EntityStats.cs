@@ -11,7 +11,7 @@ public class EntityStats : MonoBehaviour
 
     public int currentHealth;
 
-    private List<StatModifier> activeModifiers = new List<StatModifier>();
+    private List<Effect> activeEffects = new List<Effect>();
     private ShieldEffect currentShield;
 
     private void Awake()
@@ -21,13 +21,14 @@ public class EntityStats : MonoBehaviour
 
     private void Update()
     {
-        if (activeModifiers.Count > 0)
+        if (activeEffects.Count > 0)
         {
-            for (int i = activeModifiers.Count - 1; i >= 0; i--)
+            for (int i = activeEffects.Count - 1; i >= 0; i--)
             {
-                if (activeModifiers[i].UpdateTimer(Time.deltaTime))
+                if (activeEffects[i].Update(Time.deltaTime))
                 {
-                    activeModifiers.RemoveAt(i);
+                    activeEffects[i].Remove(this);
+                    activeEffects.RemoveAt(i);
                 }
             }
         }
@@ -41,9 +42,13 @@ public class EntityStats : MonoBehaviour
     public int GetAttack()
     {
         float total = baseAttackPower;
-        foreach (var mod in activeModifiers)
-            if (mod.statType == StatType.Attack)
+        foreach (var effect in activeEffects)
+        {
+            if (effect is StatModifier mod && mod.statType == StatType.Attack)
+            {
                 total += mod.value;
+            }
+        }
 
         return Mathf.RoundToInt(total);
     }
@@ -51,9 +56,13 @@ public class EntityStats : MonoBehaviour
     public float GetMoveSpeed()
     {
         float total = baseMoveSpeed;
-        foreach (var mod in activeModifiers)
-            if (mod.statType == StatType.MoveSpeed)
+        foreach (var effect in activeEffects)
+        {
+            if (effect is StatModifier mod && mod.statType == StatType.MoveSpeed)
+            {
                 total += mod.value;
+            }
+        }
 
         return total;
     }
@@ -61,9 +70,13 @@ public class EntityStats : MonoBehaviour
     public int GetDefense()
     {
         float total = baseDefense;
-        foreach (var mod in activeModifiers)
-            if (mod.statType == StatType.Defense)
+        foreach (var effect in activeEffects)
+        {
+            if (effect is StatModifier mod && mod.statType == StatType.Defense)
+            {
                 total += mod.value;
+            }
+        }
 
         return Mathf.RoundToInt(total);
     }
@@ -71,76 +84,42 @@ public class EntityStats : MonoBehaviour
     public int GetMaxHealth()
     {
         float total = baseMaxHealth;
-        foreach (var mod in activeModifiers)
-            if (mod.statType == StatType.MaxHealth)
+        foreach (var effect in activeEffects)
+        {
+            if (effect is StatModifier mod && mod.statType == StatType.MaxHealth)
+            {
                 total += mod.value;
+            }
+        }
 
         return Mathf.RoundToInt(total);
     }
 
-    public void ApplyModifier(StatModifier modifier)
+    public void ApplyEffect(Effect effect)
     {
-        activeModifiers.Add(modifier);
+        effect.Apply(this);
+        activeEffects.Add(effect);
     }
 
-    public void ApplyModifiers(List<StatModifier> modifiers)
+    public void AddStatModifier(StatModifier modifier)
     {
-        foreach (var modifier in modifiers)
-        {
-            ApplyModifier(modifier);
-        }
+        activeEffects.Add(modifier);
     }
 
-    public void RemoveModifier(StatModifier modifier)
+    public void RemoveStatModifier(StatModifier modifier)
     {
-        activeModifiers.Remove(modifier);
-    }
-
-    public void ResetModifiers()
-    {
-        activeModifiers.Clear();
-    }
-
-    public bool HasActiveModifiers()
-    {
-        return activeModifiers.Count > 0;
+        activeEffects.Remove(modifier);
     }
 
     public void ApplyShield(int value, float duration)
     {
         currentShield = new ShieldEffect(value, duration);
+        ApplyEffect(currentShield);
     }
 
-    public void ApplyTemporaryModifier(StatType statType, float value, float duration)
+    public void RemoveShield()
     {
-        StatModifier modifier = new StatModifier(statType, value, duration);
-        ApplyModifier(modifier);
-    }
-
-    public void ApplyPermanentModifier(StatType statType, float value)
-    {
-        StatModifier modifier = new StatModifier(statType, value, float.MaxValue);
-        ApplyModifier(modifier);
-    }
-
-    public void ApplySpeedBoost(float value, float duration)
-    {
-        ApplyTemporaryModifier(StatType.MoveSpeed, value, duration);
-    }
-
-    public void ApplyAttackBoost(float value, float duration)
-    {
-        ApplyTemporaryModifier(StatType.Attack, value, duration);
-    }
-
-    public void ApplyDefenseBoost(float value, float duration)
-    {
-        ApplyTemporaryModifier(StatType.Defense, value, duration);
-    }
-
-    public void ApplyHealthBoost(float value, float duration)
-    {
-        ApplyTemporaryModifier(StatType.MaxHealth, value, duration);
+        currentShield = null;
     }
 
     public void TakeDamage(int damage)

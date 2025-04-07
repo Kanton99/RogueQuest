@@ -1,21 +1,21 @@
 using UnityEngine;
-public class ShieldEffect
+public class ShieldEffect : Effect
 {
     public int shieldValue;
-    public float duration;
-    private float timer;
 
-    public ShieldEffect(int shieldValue, float duration)
+    public ShieldEffect(int shieldValue, float duration) : base(duration)
     {
         this.shieldValue = shieldValue;
-        this.duration = duration;
-        this.timer = 0f;
     }
 
-    public bool Update(float deltaTime)
+    public override void Apply(EntityStats target)
     {
-        timer += deltaTime;
-        return timer >= duration || shieldValue <= 0;
+        target.ApplyShield(shieldValue, duration);
+    }
+
+    public override void Remove(EntityStats target)
+    {
+        target.RemoveShield();
     }
 
     public int AbsorbDamage(int damage)
