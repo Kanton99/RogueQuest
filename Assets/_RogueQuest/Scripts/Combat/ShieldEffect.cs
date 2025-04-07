@@ -10,18 +10,15 @@ public class ShieldEffect : Effect
 
     public override void Apply(EntityStats target)
     {
-        target.ApplyShieldEffect(this);
+        // Appliquer un modificateur de défense temporaire
+        StatModifier defenseModifier = new StatModifier(StatType.Defense, shieldValue, duration);
+        target.ApplyEffect(defenseModifier);
     }
 
     public override void Remove(EntityStats target)
     {
-        target.RemoveShieldEffect(this);
-    }
-
-    public int AbsorbDamage(int damage)
-    {
-        int absorbed = Mathf.Min(shieldValue, damage);
-        shieldValue -= absorbed;
-        return absorbed;
+        // Supprimer le modificateur de défense temporaire
+        StatModifier defenseModifier = new StatModifier(StatType.Defense, shieldValue, duration);
+        target.RemoveStatModifier(defenseModifier);
     }
 }
