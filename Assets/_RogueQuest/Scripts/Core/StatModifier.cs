@@ -1,3 +1,5 @@
+using static UnityEngine.GraphicsBuffer;
+
 public enum StatType
 {
     Attack,
