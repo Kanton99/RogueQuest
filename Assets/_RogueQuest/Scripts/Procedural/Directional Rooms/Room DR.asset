@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 77378c14ca6ecdb48b441362c1401438, type: 3}
-  m_Name: Room UDR
+  m_Name: Room DR
   m_EditorClassIdentifier: 
-  prefab: {fileID: 735554553263654762, guid: c11588ba8ee76ca45ab6cb00acbfb636, type: 3}
+  prefab: {fileID: 735554553263654762, guid: 65b32027439ebd3428a5d6720bf091e4, type: 3}
   size: {x: 16, y: 16}
-  direction: 000000000100000003000000
+  directions: 0100000003000000

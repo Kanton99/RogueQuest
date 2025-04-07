@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 77378c14ca6ecdb48b441362c1401438, type: 3}
-  m_Name: Room UD
+  m_Name: Test Carved room
   m_EditorClassIdentifier: 
-  prefab: {fileID: 735554553263654762, guid: 61515fc65044a9047a9abc0c1c83758a, type: 3}
+  prefab: {fileID: 735554553263654762, guid: 0074efd6eed81124696e955fb3cd49dd, type: 3}
   size: {x: 16, y: 16}
-  direction: 0000000001000000
+  directions: 

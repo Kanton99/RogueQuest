@@ -5,6 +5,8 @@ using UnityEditor;
 using System;
 using System.Linq;
 using System.Xml.Serialization;
+using UnityEngine.InputSystem.Controls;
+using Unity.Mathematics;
 
 public class Generator : MonoBehaviour
 {
@@ -14,6 +16,10 @@ public class Generator : MonoBehaviour
 	[Header("Room Settings")]
 	public Vector2Int ROOM_SIZE = new Vector2Int(16, 16);
 	public int roomCount = 10;
+	public uint seed;
+
+	public Vector2Int from;
+	public Vector2Int to;
 
 	private static Dictionary<Direction, Direction> oppositeDirection = new Dictionary<Direction, Direction>
 	{
@@ -32,7 +38,8 @@ public class Generator : MonoBehaviour
 	};
 
 
-	private	Dictionary<Vector2Int, Room> roomMap;
+	private	Dictionary<Vector2Int, Room[]> roomMapPossibilities;
+	private Dictionary<Vector2Int, Room> roomMap;
 	private	List<Vector2Int> positionsToPlace = new List<Vector2Int>();
 	private List<Vector2Int> positionsUsed = new List<Vector2Int>();
 
@@ -47,39 +54,23 @@ public class Generator : MonoBehaviour
 	[ContextMenu("Generate Layout")]
 	private void GenerateInitialLayout()
 	{
-		roomMap = new Dictionary<Vector2Int, Room>();
-		//initialize the roomMap with null values of size roomCount x roomCount
-		positionsToPlace.Clear();
-		positionsUsed.Clear();
+		Unity.Mathematics.Random rng = new Unity.Mathematics.Random(seed);
+		if (roomMap == null) roomMap = new Dictionary<Vector2Int, Room>();
+		roomMap.Clear();
+		for(int x = -roomCount; x<=roomCount;x++){
+			for(int y = -roomCount; y<=roomCount;y++){
+				Vector2Int pos = new Vector2Int(x, y);
+				roomMap[pos] =  new Room(rooms[0]);
+				//apply random weight between 0-10 to the room
 
-
-		//Generate a 2D array of rooms
-		positionsToPlace.Add(new Vector2Int(0, 0));
-
-		for(int i = 0; i<roomCount; i++){
-			if(positionsToPlace.Count == 0) break;
-
-			int nextPosIter = UnityEngine.Random.Range(0, positionsToPlace.Count >= 5 ? 5 : positionsToPlace.Count);
-
-			var newPos = positionsToPlace[nextPosIter];
-			positionsToPlace.RemoveAt(0);
-			if(positionsUsed.Contains(newPos)) {
-				i--;
-				continue;	
-			}
-			positionsUsed.Add(newPos);
-			Room room = SelectRoom(newPos);
-			if(room == null) continue;
-			roomMap.Add(newPos, room);
-			Direction[] directions = room.direction;
-			foreach (Direction direction in directions)
-			{
-				Vector2Int positionToBeAdded = newPos + directionVectors[direction];
-				if(positionsUsed.Contains(positionToBeAdded) || positionsToPlace.Contains(positionToBeAdded)) continue;
-				positionsToPlace.Add(positionToBeAdded);
+				roomMap[pos].weight = rng.NextInt(0, 100);
 			}
 		}
+
+		Path path = BuildRandomPath(from, to);
+		Debug.Log(path);
 	}
+	
 
 	[ContextMenu("Place Rooms")]
 	private void PlaceRooms(){
@@ -93,90 +84,6 @@ public class Generator : MonoBehaviour
 				PlaceRoom(room.prefab, pos.x*room.size.x, pos.y*room.size.y);
 			}
 		}
-	}
-
-	[ContextMenu("CleanUp")]
-	private void CleanUp()
-	{
-		if (positionsToPlace.Count > 0)
-		{
-			for (int i = 0; i < positionsToPlace.Count; i++)
-			{
-				Vector2Int pos = positionsToPlace[i];
-				foreach (var dirVec in directionVectors)
-				{
-					Vector2Int neighborPos = pos + dirVec.Value;
-					if (roomMap.ContainsKey(neighborPos))
-					{
-						Room[] possibleRooms = GetPossibleRooms(neighborPos);
-						if (possibleRooms.Length == 0) continue;
-	
-						possibleRooms = possibleRooms.Where(r => 
-						{
-							//Get all neighboring rooms, null if there are none
-							Room[] neighbors = new Room[4];
-							foreach (var dir in directionVectors)
-							{
-								Vector2Int neighborPos2 = pos + dir.Value;
-								if (roomMap.ContainsKey(neighborPos2))
-								{
-									neighbors[(int)dir.Key] = roomMap[neighborPos2];
-								}
-							}
-
-							return false;
-						}
-						).ToArray();
-					}
-				}
-			}
-		}
-	}
-
-	private Room SelectRoom(Vector2Int newPos)
-	{
-		Room[] possibleRooms = GetPossibleRooms(newPos);
-		//return a random room from the list of possible rooms
-		if (possibleRooms.Length == 0) return null;
-
-		int randomIndex = UnityEngine.Random.Range(0, possibleRooms.Length);
-		return possibleRooms[randomIndex];
-	}
-
-	private Room[] GetPossibleRooms(Vector2Int pos){
-		//Get rooms around the position in the 2D array
-		List<Direction> neededDirections = new List<Direction>();
-		//loop through the directionVector dictionary
-		foreach (var direction in directionVectors)
-		{
-			Vector2Int neighborPos = pos + direction.Value;
-			Room room = roomMap.GetValueOrDefault(neighborPos,null);
-			if (room != null)
-			{
-				neededDirections.Add(oppositeDirection[direction.Key]);
-			}
-		}
-
-		//Get a random room from the list of rooms that has the needed directions
-		List<Room> possibleRooms = new List<Room>();
-		foreach (Room room in rooms)
-		{
-			bool hasAllDirections = true;
-			foreach (Direction direction in neededDirections)
-			{
-				if (!Array.Exists(room.direction, d => d==direction))
-				{
-					hasAllDirections = false;
-					break;
-				}
-			}
-			if (hasAllDirections)
-			{
-				possibleRooms.Add(room);
-			}
-		}
-
-		return possibleRooms.ToArray();
 	}
 
 	void PlaceRoom(GameObject room, int x, int y)
@@ -200,6 +107,70 @@ public class Generator : MonoBehaviour
 			}
 		}
 	}
+
+	private struct RoomPath
+	{
+		public Room room;
+		public Vector2Int position;
+		public Path path;
+		public int score;
+	}
+	Path BuildRandomPath(Vector2Int from, Vector2Int to){
+		int euclidianDistance = Mathf.Abs(from.x - to.x) + Mathf.Abs(from.y - to.y);
+
+		List<RoomPath> toVisit = new List<RoomPath>();
+
+		RoomPath start = new RoomPath();
+		start.room = roomMap[from];
+		start.position = from;
+		start.path = new Path();
+		start.path.position = from;
+		start.score = 0;
+		toVisit.Add(start);
+
+		for(int _ = 0; _ < 10000; _++){
+			RoomPath current = toVisit[0];
+			toVisit.RemoveAt(0);
+
+			//get the neighbors of current
+			List<RoomPath> neighbors = new List<RoomPath>();
+			foreach (var direction in Enum.GetValues(typeof(Direction)).Cast<Direction>())
+			{
+				Vector2Int neighborPos = current.position + directionVectors[direction];
+				if (roomMap.ContainsKey(neighborPos))
+				{
+					RoomPath neighbor = new RoomPath();
+					neighbor.room = roomMap[neighborPos];
+					neighbor.position = neighborPos;
+					Path path = new Path();
+					path.position = neighborPos;
+					path.prev = current.path;
+					neighbor.path = path;
+					neighbor.score = current.path.Length() + roomMap[neighborPos].weight + 1;
+					neighbors.Add(neighbor);
+				}
+			}
+			//toVisit.AddRange(neighbors);
+			//Add neighbors to the toVisit list if not already present
+			foreach (var neighbor in neighbors)
+			{
+				if (!toVisit.Any(x => x.position == neighbor.position))
+				{
+					toVisit.Add(neighbor);
+				}
+			}
+
+			toVisit = toVisit.OrderBy(x => x.score).ToList();
+			//Check if we reached the target
+			if (current.position == to)
+			{
+				return current.path;
+			}
+			if (toVisit.Count == 0) return null;
+		}
+		return null;
+
+	}
 }
 public enum Direction
 {
@@ -207,4 +178,25 @@ public enum Direction
 	Down,
 	Left,
 	Right
+}
+
+public class Path{
+	public Path prev;
+	public Path next;
+
+	public Vector2Int position;
+
+	public int Length(){
+		return 1 + (prev != null ? prev.Length() : 0);
+	}
+
+	public override string ToString()
+	{
+		string str = position.ToString();
+		if (prev != null)
+		{
+			str += " <- " + prev.ToString();
+		}
+		return str;
+	}
 }
