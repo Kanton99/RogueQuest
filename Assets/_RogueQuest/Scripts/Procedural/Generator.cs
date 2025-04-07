@@ -16,6 +16,9 @@ public class Generator : MonoBehaviour
 	[Header("Room Settings")]
 	public Vector2Int ROOM_SIZE = new Vector2Int(16, 16);
 	public int roomCount = 10;
+
+	[Header("Seed options")]
+	public bool randomSeed = true;
 	public uint seed;
 
 	public Vector2Int from;
@@ -36,6 +39,7 @@ public class Generator : MonoBehaviour
 		{Direction.Left, Vector2Int.left},
 		{Direction.Right, Vector2Int.right}
 	};
+	private static Dictionary<Vector2Int, Direction> reversedDirectionVectors = ReverseDictionary(directionVectors);
 
 
 	private	Dictionary<Vector2Int, Room[]> roomMapPossibilities;
@@ -54,13 +58,14 @@ public class Generator : MonoBehaviour
 	[ContextMenu("Generate Layout")]
 	private void GenerateInitialLayout()
 	{
+		if (randomSeed) seed = (uint)UnityEngine.Random.Range(0, UInt32.MaxValue);
 		Unity.Mathematics.Random rng = new Unity.Mathematics.Random(seed);
 		if (roomMap == null) roomMap = new Dictionary<Vector2Int, Room>();
 		roomMap.Clear();
 		for(int x = -roomCount; x<=roomCount;x++){
 			for(int y = -roomCount; y<=roomCount;y++){
 				Vector2Int pos = new Vector2Int(x, y);
-				roomMap[pos] =  new Room(rooms[0]);
+				roomMap[pos] = Instantiate(rooms[0]);
 				//apply random weight between 0-10 to the room
 
 				roomMap[pos].weight = rng.NextInt(0, 100);
@@ -69,6 +74,24 @@ public class Generator : MonoBehaviour
 
 		Path path = BuildRandomPath(from, to);
 		Debug.Log(path);
+
+		roomMap.Clear();
+
+		while(path != null)
+		{
+			Direction[] roomConnections = getConnectedDirections(path.position, path);
+			//find room in rooms with only directions like roomConnections
+			Room room = null;
+			foreach (var iroom in rooms)
+			{
+				if (iroom.directions.Length == roomConnections.Length && !iroom.directions.Except(roomConnections).Any())
+				{
+					room = iroom;
+				}
+			}
+			roomMap[path.position] = room != null ? room : rooms[0];
+			path = path.prev;
+		}
 	}
 	
 
@@ -128,10 +151,16 @@ public class Generator : MonoBehaviour
 		start.score = 0;
 		toVisit.Add(start);
 
-		for(int _ = 0; _ < 10000; _++){
+		for(int _ = 0; _ < 1000000; _++){
+			if (toVisit.Count == 0) return null;
 			RoomPath current = toVisit[0];
 			toVisit.RemoveAt(0);
 
+			//Check if we reached the target
+			if (current.position == to)
+			{
+				return current.path;
+			}
 			//get the neighbors of current
 			List<RoomPath> neighbors = new List<RoomPath>();
 			foreach (var direction in Enum.GetValues(typeof(Direction)).Cast<Direction>())
@@ -145,6 +174,7 @@ public class Generator : MonoBehaviour
 					Path path = new Path();
 					path.position = neighborPos;
 					path.prev = current.path;
+					current.path.next = path;
 					neighbor.path = path;
 					neighbor.score = current.path.Length() + roomMap[neighborPos].weight + 1;
 					neighbors.Add(neighbor);
@@ -161,15 +191,32 @@ public class Generator : MonoBehaviour
 			}
 
 			toVisit = toVisit.OrderBy(x => x.score).ToList();
-			//Check if we reached the target
-			if (current.position == to)
-			{
-				return current.path;
-			}
-			if (toVisit.Count == 0) return null;
 		}
 		return null;
 
+	}
+
+	Direction[] getConnectedDirections(Vector2Int pos, Path path){
+		Vector2Int prevDir = path.prev != null ? path.prev.position - path.position : new Vector2Int();
+		Vector2Int nextDir = path.next != null ? path.next.position - path.position : new Vector2Int();
+
+		//Create an array of directions with only the ones that are not 0,0
+		List<Direction> directions = new List<Direction>();
+
+		if (prevDir != new Vector2Int(0, 0)) directions.Add(reversedDirectionVectors[prevDir]);
+		if (nextDir != new Vector2Int(0, 0)) directions.Add(reversedDirectionVectors[nextDir]);
+
+		return directions.ToArray();
+	}
+
+	private static Dictionary<TValue, TKey> ReverseDictionary<TKey, TValue>(Dictionary<TKey, TValue> original)
+	{
+		Dictionary<TValue, TKey> reversed = new Dictionary<TValue, TKey>();
+		foreach (var kvp in original)
+		{
+			reversed[kvp.Value] = kvp.Key;
+		}
+		return reversed;
 	}
 }
 public enum Direction
