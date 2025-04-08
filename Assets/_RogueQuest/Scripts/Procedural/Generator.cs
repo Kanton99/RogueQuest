@@ -7,6 +7,7 @@ using System.Linq;
 using System.Xml.Serialization;
 using UnityEngine.InputSystem.Controls;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 
 public class Generator : MonoBehaviour
 {
@@ -47,15 +48,16 @@ public class Generator : MonoBehaviour
 	private Dictionary<Vector2Int, int> weightMap;
 
 	[ContextMenu("Generate fully")]
-	private void GenerateLevelSteps(){
-		GenerateInitialLayout();
+	private void GenerateLevelSteps() {
+		Path[] paths = GenerateInitialLayout();
+		SetupRoomMap(paths);
 		//CleanUp();
 		PlaceRooms();
 	}
 
 
 	[ContextMenu("Generate Layout")]
-	private void GenerateInitialLayout()
+	private Path[] GenerateInitialLayout()
 	{
 		if (randomSeed) seed = (uint)UnityEngine.Random.Range(0, UInt32.MaxValue);
 		Unity.Mathematics.Random rng = new Unity.Mathematics.Random(seed);
@@ -73,34 +75,9 @@ public class Generator : MonoBehaviour
 
 		Path path = BuildRandomPath(from, to);
 
-
-		while(path != null)
-		{
-			roomMap[path.position] = rooms[0];
-			path = path.prev;
-		}
-
-		IEnumerable<Vector2Int> roomPositions = roomMap.Keys;
-		for(int i = 0; i<roomPositions.Count();  i++){
-			Vector2Int roomPos = roomPositions.ElementAt(i);
-			List<Direction> neighbors = new List<Direction>();
-			if (roomMap.ContainsKey(roomPos + Vector2Int.left)) neighbors.Add(Direction.Left);
-			if (roomMap.ContainsKey(roomPos + Vector2Int.right)) neighbors.Add(Direction.Right);
-			if (roomMap.ContainsKey(roomPos + Vector2Int.up)) neighbors.Add(Direction.Up);
-			if (roomMap.ContainsKey(roomPos + Vector2Int.down)) neighbors.Add(Direction.Down);
-			neighbors.Sort();
-
-			Room[] possibilities = Array.FindAll(rooms, r =>
-			{
-				Array.Sort(r.directions);
-				return ArrayUtility.ArrayEquals(neighbors.ToArray(), r.directions);
-			});
-
-
-			Room r = possibilities.Length > 0 ? possibilities[UnityEngine.Random.Range(0, possibilities.Length)] : rooms[0];
-
-			roomMap[roomPos] = r;
-		}
+		Path[] paths = new Path[1];
+		paths[0] = path;
+		return paths;
 	}
 	
 
@@ -223,6 +200,38 @@ public class Generator : MonoBehaviour
 			reversed[kvp.Value] = kvp.Key;
 		}
 		return reversed;
+	}
+
+	private void SetupRoomMap(Path[] paths){
+		if (paths.Length == 0) return;
+		Path path = paths[0];
+		while (path != null)
+		{
+			roomMap[path.position] = rooms[0];
+			path = path.prev;
+		}
+
+		IEnumerable<Vector2Int> roomPositions = roomMap.Keys;
+		for(int i = 0; i<roomPositions.Count();  i++){
+			Vector2Int roomPos = roomPositions.ElementAt(i);
+			List<Direction> neighbors = new List<Direction>();
+			if (roomMap.ContainsKey(roomPos + Vector2Int.left)) neighbors.Add(Direction.Left);
+			if (roomMap.ContainsKey(roomPos + Vector2Int.right)) neighbors.Add(Direction.Right);
+			if (roomMap.ContainsKey(roomPos + Vector2Int.up)) neighbors.Add(Direction.Up);
+			if (roomMap.ContainsKey(roomPos + Vector2Int.down)) neighbors.Add(Direction.Down);
+			neighbors.Sort();
+
+			Room[] possibilities = Array.FindAll(rooms, r =>
+			{
+				Array.Sort(r.directions);
+				return ArrayUtility.ArrayEquals(neighbors.ToArray(), r.directions);
+			});
+
+
+			Room r = possibilities.Length > 0 ? possibilities[UnityEngine.Random.Range(0, possibilities.Length)] : rooms[0];
+
+			roomMap[roomPos] = r;
+		}
 	}
 }
 public enum Direction
