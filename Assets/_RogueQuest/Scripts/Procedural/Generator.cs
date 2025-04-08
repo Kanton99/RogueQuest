@@ -10,12 +10,13 @@ using Unity.Mathematics;
 
 public class Generator : MonoBehaviour
 {
+	[Header("Room Prefabs")]
 	public Room[] rooms;
 	public GameObject map;
 
 	[Header("Room Settings")]
 	public Vector2Int ROOM_SIZE = new Vector2Int(16, 16);
-	public int roomCount = 10;
+	public int levelRadius = 10;
 
 	[Header("Seed options")]
 	public bool randomSeed = true;
@@ -42,10 +43,8 @@ public class Generator : MonoBehaviour
 	private static Dictionary<Vector2Int, Direction> reversedDirectionVectors = ReverseDictionary(directionVectors);
 
 
-	private	Dictionary<Vector2Int, Room[]> roomMapPossibilities;
 	private Dictionary<Vector2Int, Room> roomMap;
-	private	List<Vector2Int> positionsToPlace = new List<Vector2Int>();
-	private List<Vector2Int> positionsUsed = new List<Vector2Int>();
+	private Dictionary<Vector2Int, int> weightMap;
 
 	[ContextMenu("Generate fully")]
 	private void GenerateLevelSteps(){
@@ -62,35 +61,45 @@ public class Generator : MonoBehaviour
 		Unity.Mathematics.Random rng = new Unity.Mathematics.Random(seed);
 		if (roomMap == null) roomMap = new Dictionary<Vector2Int, Room>();
 		roomMap.Clear();
-		for(int x = -roomCount; x<=roomCount;x++){
-			for(int y = -roomCount; y<=roomCount;y++){
-				Vector2Int pos = new Vector2Int(x, y);
-				roomMap[pos] = Instantiate(rooms[0]);
-				//apply random weight between 0-10 to the room
+		if (weightMap == null) weightMap = new Dictionary<Vector2Int, int>();
+		weightMap.Clear();
 
-				roomMap[pos].weight = rng.NextInt(0, 100);
+		for(int x = -levelRadius; x<=levelRadius;x++){
+			for(int y = -levelRadius; y<=levelRadius;y++){
+				Vector2Int pos = new Vector2Int(x, y);
+				weightMap[pos] = rng.NextInt(0, 100);
 			}
 		}
 
 		Path path = BuildRandomPath(from, to);
-		Debug.Log(path);
 
-		roomMap.Clear();
 
 		while(path != null)
 		{
-			Direction[] roomConnections = getConnectedDirections(path.position, path);
-			//find room in rooms with only directions like roomConnections
-			Room room = null;
-			foreach (var iroom in rooms)
-			{
-				if (iroom.directions.Length == roomConnections.Length && !iroom.directions.Except(roomConnections).Any())
-				{
-					room = iroom;
-				}
-			}
-			roomMap[path.position] = room != null ? room : rooms[0];
+			roomMap[path.position] = rooms[0];
 			path = path.prev;
+		}
+
+		IEnumerable<Vector2Int> roomPositions = roomMap.Keys;
+		for(int i = 0; i<roomPositions.Count();  i++){
+			Vector2Int roomPos = roomPositions.ElementAt(i);
+			List<Direction> neighbors = new List<Direction>();
+			if (roomMap.ContainsKey(roomPos + Vector2Int.left)) neighbors.Add(Direction.Left);
+			if (roomMap.ContainsKey(roomPos + Vector2Int.right)) neighbors.Add(Direction.Right);
+			if (roomMap.ContainsKey(roomPos + Vector2Int.up)) neighbors.Add(Direction.Up);
+			if (roomMap.ContainsKey(roomPos + Vector2Int.down)) neighbors.Add(Direction.Down);
+			neighbors.Sort();
+
+			Room[] possibilities = Array.FindAll(rooms, r =>
+			{
+				Array.Sort(r.directions);
+				return ArrayUtility.ArrayEquals(neighbors.ToArray(), r.directions);
+			});
+
+
+			Room r = possibilities.Length > 0 ? possibilities[UnityEngine.Random.Range(0, possibilities.Length)] : rooms[0];
+
+			roomMap[roomPos] = r;
 		}
 	}
 	
@@ -133,7 +142,6 @@ public class Generator : MonoBehaviour
 
 	private struct RoomPath
 	{
-		public Room room;
 		public Vector2Int position;
 		public Path path;
 		public int score;
@@ -144,7 +152,6 @@ public class Generator : MonoBehaviour
 		List<RoomPath> toVisit = new List<RoomPath>();
 
 		RoomPath start = new RoomPath();
-		start.room = roomMap[from];
 		start.position = from;
 		start.path = new Path();
 		start.path.position = from;
@@ -166,17 +173,16 @@ public class Generator : MonoBehaviour
 			foreach (var direction in Enum.GetValues(typeof(Direction)).Cast<Direction>())
 			{
 				Vector2Int neighborPos = current.position + directionVectors[direction];
-				if (roomMap.ContainsKey(neighborPos))
+				if (weightMap.ContainsKey(neighborPos))
 				{
 					RoomPath neighbor = new RoomPath();
-					neighbor.room = roomMap[neighborPos];
 					neighbor.position = neighborPos;
 					Path path = new Path();
 					path.position = neighborPos;
 					path.prev = current.path;
 					current.path.next = path;
 					neighbor.path = path;
-					neighbor.score = current.path.Length() + roomMap[neighborPos].weight + 1;
+					neighbor.score = current.path.Length() + weightMap[neighborPos] + 1;
 					neighbors.Add(neighbor);
 				}
 			}
@@ -245,5 +251,9 @@ public class Path{
 			str += " <- " + prev.ToString();
 		}
 		return str;
+	}
+
+	public bool HasPosition(Vector2Int pos){
+		return pos == position || prev.HasPosition(pos);
 	}
 }
