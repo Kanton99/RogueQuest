@@ -757,6 +757,10 @@ MonoBehaviour:
   quickSlotIcons: []
   buffContainer: {fileID: 7646554895954169422}
   buffIconPrefab: {fileID: 7646554895954169423}
+  attackBuffSprite: {fileID: -5118925346300219471, guid: 96a7c554cc3114444a4adb0d2e312c4d, type: 3}
+  defenseBuffSprite: {fileID: -2056384665814974296, guid: 96a7c554cc3114444a4adb0d2e312c4d, type: 3}
+  moveSpeedBuffSprite: {fileID: -4198387136114616810, guid: 96a7c554cc3114444a4adb0d2e312c4d, type: 3}
+  maxHealthBuffSprite: {fileID: 8326423470851198762, guid: 96a7c554cc3114444a4adb0d2e312c4d, type: 3}
 --- !u!1001 &232966342
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -870,8 +874,8 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 949800207412781356, guid: edb762a1d725b90489b1b108e78b04de, type: 3}
-      propertyPath: m_Color.a
+    - target: {fileID: 556845341912248307, guid: edb762a1d725b90489b1b108e78b04de, type: 3}
+      propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2426641335031342641, guid: edb762a1d725b90489b1b108e78b04de, type: 3}
@@ -954,16 +958,28 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3295484495092042279, guid: edb762a1d725b90489b1b108e78b04de, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3295484495092042279, guid: edb762a1d725b90489b1b108e78b04de, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3295484495092042279, guid: edb762a1d725b90489b1b108e78b04de, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3295484495092042279, guid: edb762a1d725b90489b1b108e78b04de, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4544712645238306535, guid: edb762a1d725b90489b1b108e78b04de, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4544712645238306535, guid: edb762a1d725b90489b1b108e78b04de, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5673248270874099245, guid: edb762a1d725b90489b1b108e78b04de, type: 3}
-      propertyPath: m_Color.a
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9069420629484133488, guid: edb762a1d725b90489b1b108e78b04de, type: 3}

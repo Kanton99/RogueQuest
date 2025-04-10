@@ -8,18 +8,25 @@ public class HUDManager : MonoBehaviour
     public Slider healthSlider;
 
     [Header("Quickslots")]
-    public List<Image> quickSlotIcons = new List<Image>(); // Associez les icônes des quickslots dans l'inspecteur.
+    public List<Image> quickSlotIcons = new List<Image>();
 
     [Header("Buffs et Debuffs")]
-    public Transform buffContainer; // Conteneur pour les icônes de buffs/debuffs.
-    public GameObject buffIconPrefab; // Préfabriqué pour une icône de buff/debuff.
+    public Transform buffContainer;
+    public GameObject buffIconPrefab;
+
+    [Header("Sprites pour Buffs/Debuffs")]
+    public Sprite attackBuffSprite;
+    public Sprite defenseBuffSprite;
+    public Sprite moveSpeedBuffSprite;
+    public Sprite maxHealthBuffSprite;
 
     private EntityStats playerStats;
+    private Dictionary<StatType, Sprite> statTypeToSprite;
 
     private void Start()
     {
         // Assurez-vous que le joueur est assigné.
-        playerStats = FindObjectOfType<EntityStats>();
+        playerStats = Object.FindFirstObjectByType<EntityStats>();
         if (playerStats == null)
         {
             Debug.LogError("Aucun EntityStats trouvé pour le joueur !");
@@ -29,6 +36,15 @@ public class HUDManager : MonoBehaviour
         // Initialiser la barre de vie.
         healthSlider.maxValue = playerStats.GetMaxHealth();
         healthSlider.value = playerStats.currentHealth;
+
+        // Initialiser le dictionnaire des sprites.
+        statTypeToSprite = new Dictionary<StatType, Sprite>
+        {
+            { StatType.Attack, attackBuffSprite },
+            { StatType.Defense, defenseBuffSprite },
+            { StatType.MoveSpeed, moveSpeedBuffSprite },
+            { StatType.MaxHealth, maxHealthBuffSprite }
+        };
     }
 
     private void Update()
@@ -41,18 +57,6 @@ public class HUDManager : MonoBehaviour
 
         // Mettre à jour les buffs et debuffs.
         UpdateBuffIcons();
-    }
-
-    public void UpdateQuickSlot(int slotIndex, Sprite icon)
-    {
-        if (slotIndex < 0 || slotIndex >= quickSlotIcons.Count)
-        {
-            Debug.LogWarning("Index de quickslot invalide !");
-            return;
-        }
-
-        quickSlotIcons[slotIndex].sprite = icon;
-        quickSlotIcons[slotIndex].enabled = icon != null; // Désactive l'icône si aucun sprite n'est assigné.
     }
 
     private void UpdateBuffIcons()
@@ -69,8 +73,22 @@ public class HUDManager : MonoBehaviour
             if (effect is StatModifier statModifier)
             {
                 GameObject icon = Instantiate(buffIconPrefab, buffContainer);
-                // Configurez l'icône (par exemple, changez l'image ou le texte).
-                icon.GetComponentInChildren<Text>().text = statModifier.statType.ToString();
+
+                // Assigner le sprite correspondant au StatType.
+                Image iconImage = icon.GetComponentInChildren<Image>();
+                if (iconImage != null && statTypeToSprite.ContainsKey(statModifier.statType))
+                {
+                    iconImage.sprite = statTypeToSprite[statModifier.statType];
+                    // Appliquer une couleur différente pour les buffs et debuffs.
+                    iconImage.color = statModifier.isBuff ? Color.green : Color.red;
+                }
+
+                // Optionnel : Ajouter du texte pour afficher des informations supplémentaires.
+                Text iconText = icon.GetComponentInChildren<Text>();
+                if (iconText != null)
+                {
+                    iconText.text = $"{(statModifier.isBuff ? "+" : "-")}{Mathf.Abs(statModifier.value)}";
+                }
             }
         }
     }
