@@ -150,6 +150,10 @@ public class EntityStats : MonoBehaviour
             Die();
         }
     }
+    public List<Effect> GetActiveEffects()
+    {
+        return activeEffects;
+    }
 
     private void Die()
     {
