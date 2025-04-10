@@ -7,7 +7,7 @@ public abstract class Item : ScriptableObject
     public string itemName;
     public string description;
 
-    public virtual void Use(GameObject target){
+    public virtual void Use(){
         Debug.Log($"Using {itemName}");
     }
 

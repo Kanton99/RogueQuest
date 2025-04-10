@@ -6,18 +6,13 @@ class Equipment : Item
 	[Header("Equipment Properties")]
 	[SerializeField]
 	public Effect effect;
-	public override void Use(GameObject target)
+
+	public override void Use()
 	{
-		base.Use(target);
-		Debug.Log($"Equipping {itemName} on {target.name}");
-		EntityStats entityStats = target.GetComponent<EntityStats>();
+		EntityStats entityStats = GameObject.FindGameObjectWithTag("Player").GetComponent<EntityStats>();
 		if (entityStats != null)
-		{
 			effect.Apply(entityStats);
-		}
 		else
-		{
-			Debug.LogWarning($"Target {target.name} does not have EntityStats component.");
-		}
+			Debug.LogWarning($"Player does not have EntityStats component.");
 	}
 }

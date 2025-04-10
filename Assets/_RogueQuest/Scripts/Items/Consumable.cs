@@ -5,17 +5,15 @@ class Consumable : Item
 {
 	[Header("Consumable Properties")]
 	public Effect effect;
-	public override void Use(GameObject target)
+
+	public override void Use()
 	{
-		base.Use(target);
-		Debug.Log($"Using {itemName} on {target.name}");
-		EntityStats entityStats = target.GetComponent<EntityStats>();
+		EntityStats entityStats = GameObject.FindGameObjectWithTag("Player").GetComponent<EntityStats>();
 		if(entityStats != null) 
 			effect.Apply(entityStats);
 		//Add login to remove the item from inventory
 	}
 	public override void PickUp()
 	{
-		base.PickUp();
 	}
 }
