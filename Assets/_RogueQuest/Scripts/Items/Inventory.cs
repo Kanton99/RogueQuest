@@ -20,11 +20,6 @@ public class Inventory : MonoBehaviour
 		consumables = new Consumable[maxConsumables]; // Example size, adjust as needed
 	}
 
-	private void Update()
-	{
-			
-	}
-
 	public void AddItem(Item item)
 	{
 		switch (item)
@@ -100,5 +95,4 @@ public class Inventory : MonoBehaviour
 		AddItem(closests.transform.GetComponent<DroppedItem>().item);
 		Destroy(closests.transform.gameObject);
 	}
-
 }
