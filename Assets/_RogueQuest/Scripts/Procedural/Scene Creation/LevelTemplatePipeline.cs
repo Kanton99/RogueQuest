@@ -23,7 +23,11 @@ public class LevelTemplatePipeline : ISceneTemplatePipeline
 		if (generator != null)
 		{
 			generator.GenerateLevelSteps();
+#if UNITY_EDITOR
+			GameObject.DestroyImmediate(generatorObject);
+#else
 			GameObject.Destroy(generatorObject);
+#endif
 		}
 		else
 		{
