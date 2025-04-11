@@ -48,7 +48,7 @@ public class Generator : MonoBehaviour
 	private Dictionary<Vector2Int, int> weightMap;
 
 	[ContextMenu("Generate fully")]
-	private void GenerateLevelSteps() {
+	public void GenerateLevelSteps() {
 		Path[] paths = GenerateInitialLayout();
 		SetupRoomMap(paths);
 		//CleanUp();
