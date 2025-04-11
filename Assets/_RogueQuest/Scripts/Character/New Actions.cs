@@ -88,7 +88,7 @@ public partial class @NewActions: IInputActionCollection2, IDisposable
     ""name"": ""New Actions"",
     ""maps"": [
         {
-            ""name"": ""New action map"",
+            ""name"": ""In Game Controls"",
             ""id"": ""19c4e9fd-8ec4-40e1-9598-4ca2b816f6a1"",
             ""actions"": [
                 {
@@ -113,6 +113,15 @@ public partial class @NewActions: IInputActionCollection2, IDisposable
                     ""name"": ""Dash"",
                     ""type"": ""Button"",
                     ""id"": ""98f532ab-b776-4874-a957-1fb063aa923d"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Pickup item"",
+                    ""type"": ""Button"",
+                    ""id"": ""1c2cd743-2e38-4ed8-a90a-258f765b62f7"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -207,6 +216,17 @@ public partial class @NewActions: IInputActionCollection2, IDisposable
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1c55be1b-eb03-4e35-973c-314a1465d39a"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pickup item"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -240,16 +260,17 @@ public partial class @NewActions: IInputActionCollection2, IDisposable
         }
     ]
 }");
-        // New action map
-        m_Newactionmap = asset.FindActionMap("New action map", throwIfNotFound: true);
-        m_Newactionmap_Move = m_Newactionmap.FindAction("Move", throwIfNotFound: true);
-        m_Newactionmap_Jump = m_Newactionmap.FindAction("Jump", throwIfNotFound: true);
-        m_Newactionmap_Dash = m_Newactionmap.FindAction("Dash", throwIfNotFound: true);
+        // In Game Controls
+        m_InGameControls = asset.FindActionMap("In Game Controls", throwIfNotFound: true);
+        m_InGameControls_Move = m_InGameControls.FindAction("Move", throwIfNotFound: true);
+        m_InGameControls_Jump = m_InGameControls.FindAction("Jump", throwIfNotFound: true);
+        m_InGameControls_Dash = m_InGameControls.FindAction("Dash", throwIfNotFound: true);
+        m_InGameControls_Pickupitem = m_InGameControls.FindAction("Pickup item", throwIfNotFound: true);
     }
 
     ~@NewActions()
     {
-        UnityEngine.Debug.Assert(!m_Newactionmap.enabled, "This will cause a leak and performance issues, NewActions.Newactionmap.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_InGameControls.enabled, "This will cause a leak and performance issues, NewActions.InGameControls.Disable() has not been called.");
     }
 
     /// <summary>
@@ -322,39 +343,44 @@ public partial class @NewActions: IInputActionCollection2, IDisposable
         return asset.FindBinding(bindingMask, out action);
     }
 
-    // New action map
-    private readonly InputActionMap m_Newactionmap;
-    private List<INewactionmapActions> m_NewactionmapActionsCallbackInterfaces = new List<INewactionmapActions>();
-    private readonly InputAction m_Newactionmap_Move;
-    private readonly InputAction m_Newactionmap_Jump;
-    private readonly InputAction m_Newactionmap_Dash;
+    // In Game Controls
+    private readonly InputActionMap m_InGameControls;
+    private List<IInGameControlsActions> m_InGameControlsActionsCallbackInterfaces = new List<IInGameControlsActions>();
+    private readonly InputAction m_InGameControls_Move;
+    private readonly InputAction m_InGameControls_Jump;
+    private readonly InputAction m_InGameControls_Dash;
+    private readonly InputAction m_InGameControls_Pickupitem;
     /// <summary>
-    /// Provides access to input actions defined in input action map "New action map".
+    /// Provides access to input actions defined in input action map "In Game Controls".
     /// </summary>
-    public struct NewactionmapActions
+    public struct InGameControlsActions
     {
         private @NewActions m_Wrapper;
 
         /// <summary>
         /// Construct a new instance of the input action map wrapper class.
         /// </summary>
-        public NewactionmapActions(@NewActions wrapper) { m_Wrapper = wrapper; }
+        public InGameControlsActions(@NewActions wrapper) { m_Wrapper = wrapper; }
         /// <summary>
-        /// Provides access to the underlying input action "Newactionmap/Move".
+        /// Provides access to the underlying input action "InGameControls/Move".
         /// </summary>
-        public InputAction @Move => m_Wrapper.m_Newactionmap_Move;
+        public InputAction @Move => m_Wrapper.m_InGameControls_Move;
         /// <summary>
-        /// Provides access to the underlying input action "Newactionmap/Jump".
+        /// Provides access to the underlying input action "InGameControls/Jump".
         /// </summary>
-        public InputAction @Jump => m_Wrapper.m_Newactionmap_Jump;
+        public InputAction @Jump => m_Wrapper.m_InGameControls_Jump;
         /// <summary>
-        /// Provides access to the underlying input action "Newactionmap/Dash".
+        /// Provides access to the underlying input action "InGameControls/Dash".
         /// </summary>
-        public InputAction @Dash => m_Wrapper.m_Newactionmap_Dash;
+        public InputAction @Dash => m_Wrapper.m_InGameControls_Dash;
+        /// <summary>
+        /// Provides access to the underlying input action "InGameControls/Pickupitem".
+        /// </summary>
+        public InputAction @Pickupitem => m_Wrapper.m_InGameControls_Pickupitem;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
-        public InputActionMap Get() { return m_Wrapper.m_Newactionmap; }
+        public InputActionMap Get() { return m_Wrapper.m_InGameControls; }
         /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
         public void Enable() { Get().Enable(); }
         /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
@@ -362,9 +388,9 @@ public partial class @NewActions: IInputActionCollection2, IDisposable
         /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
         public bool enabled => Get().enabled;
         /// <summary>
-        /// Implicitly converts an <see ref="NewactionmapActions" /> to an <see ref="InputActionMap" /> instance.
+        /// Implicitly converts an <see ref="InGameControlsActions" /> to an <see ref="InputActionMap" /> instance.
         /// </summary>
-        public static implicit operator InputActionMap(NewactionmapActions set) { return set.Get(); }
+        public static implicit operator InputActionMap(InGameControlsActions set) { return set.Get(); }
         /// <summary>
         /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
         /// </summary>
@@ -372,11 +398,11 @@ public partial class @NewActions: IInputActionCollection2, IDisposable
         /// <remarks>
         /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
         /// </remarks>
-        /// <seealso cref="NewactionmapActions" />
-        public void AddCallbacks(INewactionmapActions instance)
+        /// <seealso cref="InGameControlsActions" />
+        public void AddCallbacks(IInGameControlsActions instance)
         {
-            if (instance == null || m_Wrapper.m_NewactionmapActionsCallbackInterfaces.Contains(instance)) return;
-            m_Wrapper.m_NewactionmapActionsCallbackInterfaces.Add(instance);
+            if (instance == null || m_Wrapper.m_InGameControlsActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_InGameControlsActionsCallbackInterfaces.Add(instance);
             @Move.started += instance.OnMove;
             @Move.performed += instance.OnMove;
             @Move.canceled += instance.OnMove;
@@ -386,6 +412,9 @@ public partial class @NewActions: IInputActionCollection2, IDisposable
             @Dash.started += instance.OnDash;
             @Dash.performed += instance.OnDash;
             @Dash.canceled += instance.OnDash;
+            @Pickupitem.started += instance.OnPickupitem;
+            @Pickupitem.performed += instance.OnPickupitem;
+            @Pickupitem.canceled += instance.OnPickupitem;
         }
 
         /// <summary>
@@ -394,8 +423,8 @@ public partial class @NewActions: IInputActionCollection2, IDisposable
         /// <remarks>
         /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
         /// </remarks>
-        /// <seealso cref="NewactionmapActions" />
-        private void UnregisterCallbacks(INewactionmapActions instance)
+        /// <seealso cref="InGameControlsActions" />
+        private void UnregisterCallbacks(IInGameControlsActions instance)
         {
             @Move.started -= instance.OnMove;
             @Move.performed -= instance.OnMove;
@@ -406,15 +435,18 @@ public partial class @NewActions: IInputActionCollection2, IDisposable
             @Dash.started -= instance.OnDash;
             @Dash.performed -= instance.OnDash;
             @Dash.canceled -= instance.OnDash;
+            @Pickupitem.started -= instance.OnPickupitem;
+            @Pickupitem.performed -= instance.OnPickupitem;
+            @Pickupitem.canceled -= instance.OnPickupitem;
         }
 
         /// <summary>
-        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="NewactionmapActions.UnregisterCallbacks(INewactionmapActions)" />.
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="InGameControlsActions.UnregisterCallbacks(IInGameControlsActions)" />.
         /// </summary>
-        /// <seealso cref="NewactionmapActions.UnregisterCallbacks(INewactionmapActions)" />
-        public void RemoveCallbacks(INewactionmapActions instance)
+        /// <seealso cref="InGameControlsActions.UnregisterCallbacks(IInGameControlsActions)" />
+        public void RemoveCallbacks(IInGameControlsActions instance)
         {
-            if (m_Wrapper.m_NewactionmapActionsCallbackInterfaces.Remove(instance))
+            if (m_Wrapper.m_InGameControlsActionsCallbackInterfaces.Remove(instance))
                 UnregisterCallbacks(instance);
         }
 
@@ -424,21 +456,21 @@ public partial class @NewActions: IInputActionCollection2, IDisposable
         /// <remarks>
         /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
         /// </remarks>
-        /// <seealso cref="NewactionmapActions.AddCallbacks(INewactionmapActions)" />
-        /// <seealso cref="NewactionmapActions.RemoveCallbacks(INewactionmapActions)" />
-        /// <seealso cref="NewactionmapActions.UnregisterCallbacks(INewactionmapActions)" />
-        public void SetCallbacks(INewactionmapActions instance)
+        /// <seealso cref="InGameControlsActions.AddCallbacks(IInGameControlsActions)" />
+        /// <seealso cref="InGameControlsActions.RemoveCallbacks(IInGameControlsActions)" />
+        /// <seealso cref="InGameControlsActions.UnregisterCallbacks(IInGameControlsActions)" />
+        public void SetCallbacks(IInGameControlsActions instance)
         {
-            foreach (var item in m_Wrapper.m_NewactionmapActionsCallbackInterfaces)
+            foreach (var item in m_Wrapper.m_InGameControlsActionsCallbackInterfaces)
                 UnregisterCallbacks(item);
-            m_Wrapper.m_NewactionmapActionsCallbackInterfaces.Clear();
+            m_Wrapper.m_InGameControlsActionsCallbackInterfaces.Clear();
             AddCallbacks(instance);
         }
     }
     /// <summary>
-    /// Provides a new <see cref="NewactionmapActions" /> instance referencing this action map.
+    /// Provides a new <see cref="InGameControlsActions" /> instance referencing this action map.
     /// </summary>
-    public NewactionmapActions @Newactionmap => new NewactionmapActions(this);
+    public InGameControlsActions @InGameControls => new InGameControlsActions(this);
     private int m_NewControlSchemeSchemeIndex = -1;
     /// <summary>
     /// Provides access to the input control scheme.
@@ -453,11 +485,11 @@ public partial class @NewActions: IInputActionCollection2, IDisposable
         }
     }
     /// <summary>
-    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "New action map" which allows adding and removing callbacks.
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "In Game Controls" which allows adding and removing callbacks.
     /// </summary>
-    /// <seealso cref="NewactionmapActions.AddCallbacks(INewactionmapActions)" />
-    /// <seealso cref="NewactionmapActions.RemoveCallbacks(INewactionmapActions)" />
-    public interface INewactionmapActions
+    /// <seealso cref="InGameControlsActions.AddCallbacks(IInGameControlsActions)" />
+    /// <seealso cref="InGameControlsActions.RemoveCallbacks(IInGameControlsActions)" />
+    public interface IInGameControlsActions
     {
         /// <summary>
         /// Method invoked when associated input action "Move" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
@@ -480,5 +512,12 @@ public partial class @NewActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnDash(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Pickup item" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnPickupitem(InputAction.CallbackContext context);
     }
 }
