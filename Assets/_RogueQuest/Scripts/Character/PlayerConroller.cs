@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour
-{
+public class PlayerController : MonoBehaviour, InputSystem_Actions.IPlayerActions
+{  
     [Header("Movement Settings")]
     public float moveSpeed = 5f;
     public float jumpForce = 10f;
@@ -15,10 +15,30 @@ public class PlayerController : MonoBehaviour
     private bool isDashing;
     private float dashTime;
 
+	private InputSystem_Actions m_Actions;             
+	private InputSystem_Actions.PlayerActions m_Player;    
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+		m_Actions = new InputSystem_Actions();              // Create asset object.
+		m_Player = m_Actions.Player;                      // Extract action map object.
+		m_Player.AddCallbacks(this);                      // Register callback interface IPlayerActions.
     }
+   
+    void OnDestroy()   
+	{
+        m_Actions.Dispose();
+    }
+
+	void OnEnable()
+	{
+        m_Player.Enable();
+	}
+
+	void OnDisable()
+	{
+        m_Player.Disable();
+	}
 
     private void Update()
     {
@@ -58,7 +78,7 @@ public class PlayerController : MonoBehaviour
 
     public void OnJump(InputAction.CallbackContext context)
     {
-        if (context.performed && !isDashing)
+        if (context.performed && !isDashing && !isJumping)
         {
             isJumping = true;
         }
@@ -72,4 +92,39 @@ public class PlayerController : MonoBehaviour
             dashTime = dashDuration;
         }
     }
+
+	public void OnAttack(InputAction.CallbackContext context)
+	{
+		throw new System.NotImplementedException();
+	}
+
+	public void OnInteract(InputAction.CallbackContext context)
+	{
+        Inventory inventory = gameObject.GetComponent<Inventory>();
+        if (inventory == null){
+            Debug.LogWarning("No Inventory");
+            return;
+        }
+        inventory.PickUpItem();
+	}
+
+	public void OnCrouch(InputAction.CallbackContext context)
+	{
+		throw new System.NotImplementedException();
+	}
+
+	public void OnPrevious(InputAction.CallbackContext context)
+	{
+		throw new System.NotImplementedException();
+	}
+
+	public void OnNext(InputAction.CallbackContext context)
+	{
+		throw new System.NotImplementedException();
+	}
+
+	public void OnSprint(InputAction.CallbackContext context)
+	{
+		throw new System.NotImplementedException();
+	}
 }

@@ -17,7 +17,6 @@ public class Generator : MonoBehaviour
 	public Tilemap background;
 
 	[Header("Room Settings")]
-	public Vector2Int ROOM_SIZE = new Vector2Int(16, 16);
 	public int levelRadius = 10;
 
 	[Header("Seed options")]
@@ -47,12 +46,17 @@ public class Generator : MonoBehaviour
 
 	private Dictionary<Vector2Int, Room> roomMap;
 	private Dictionary<Vector2Int, int> weightMap;
+	private List<GameObject> props;
 
 	[ContextMenu("Generate fully")]
-	public void GenerateLevelSteps() {
+	public void GenerateLevelSteps()
+	{
+		// Nettoyer les objets générés précédemment
+		CleanUp();
+
+		// Générer le niveau
 		Path[] paths = GenerateInitialLayout();
 		SetupRoomMap(paths);
-		//CleanUp();
 		PlaceRooms();
 	}
 
@@ -62,8 +66,10 @@ public class Generator : MonoBehaviour
 	{
 		if (randomSeed) seed = (uint)UnityEngine.Random.Range(0, UInt32.MaxValue);
 		Unity.Mathematics.Random rng = new Unity.Mathematics.Random(seed);
+
 		if (roomMap == null) roomMap = new Dictionary<Vector2Int, Room>();
 		roomMap.Clear();
+
 		if (weightMap == null) weightMap = new Dictionary<Vector2Int, int>();
 		weightMap.Clear();
 
@@ -83,20 +89,31 @@ public class Generator : MonoBehaviour
 	
 
 	[ContextMenu("Place Rooms")]
-	private void PlaceRooms(){
-		ground.GetComponent<Tilemap>().ClearAllTiles();
-		foreach(var posAndRoom in roomMap)
+	private void PlaceRooms()
+	{
+  //      ground.ClearAllTiles();
+		//background.ClearAllTiles();
+		foreach (var posAndRoom in roomMap)
 		{
 			Room room = posAndRoom.Value;
 			Vector2Int pos = posAndRoom.Key;
 			if (room != null)
 			{
-				PlaceRoom(room.prefab, pos.x*room.size.x, pos.y*room.size.y);
+				// Placer la salle et obtenir son instance
+				GameObject roomInstance = PlaceRoom(room.prefab, pos.x * room.size.x, pos.y * room.size.y);
+
+				// Spawner les items dans la salle
+				if (itemSpawner != null)
+					itemSpawner.SpawnItems(room, roomInstance);
+
+				// Spawner les ennemis dans la salle
+				if (enemySpawner != null)
+					enemySpawner.SpawnEnemies(room, roomInstance);
 			}
 		}
 	}
 
-	void PlaceRoom(GameObject room, int x, int y)
+	GameObject PlaceRoom(GameObject room, int x, int y)
 	{
 		/* Room prefab structure
 		 room <TileMap>
@@ -109,9 +126,8 @@ public class Generator : MonoBehaviour
 		Tilemap backgroundTilemap = null;
 		if(room.transform.childCount > 2)
 			backgroundTilemap = room.transform.GetChild(1).GetComponent<Tilemap>();
-		BoundsInt bounds = ground.cellBounds;
-		var size = ground.size;
-		TileBase[] groundTiles = ground.GetTilesBlock(bounds);
+		BoundsInt bounds = groundTileMap.cellBounds;
+		TileBase[] groundTiles = groundTileMap.GetTilesBlock(bounds);
 		TileBase[] backgroundTiles = null;
 		if(backgroundTilemap)
 			backgroundTiles = backgroundTilemap.GetTilesBlock(bounds);
@@ -133,16 +149,30 @@ public class Generator : MonoBehaviour
 				}
 			}
 		}
+		GameObject roomObject = new GameObject();
+		roomObject.transform.position = new Vector3(x, y, 0);
+		spawnedRooms.Add(roomObject);
 		// TODO COPY PROPS
-		if(room.transform.childCount < 1) return;
-		GameObject props = room.transform.GetChild(0).gameObject;
-		for (int i = 0; i < props.transform.childCount; i++)
+		if(room.transform.childCount < 1) return roomObject;
+		GameObject prefabProps = room.transform.GetChild(0).gameObject;
+		for (int i = 0; i < prefabProps.transform.childCount; i++)
 		{
-			GameObject prop = props.transform.GetChild(i).gameObject;
+			GameObject prop = prefabProps.transform.GetChild(i).gameObject;
 			GameObject.Instantiate(prop, new Vector3(x + prop.transform.position.x, y + prop.transform.position.y, 0), Quaternion.identity);
+			props.Add(prop);
 		}
+
+		return roomObject;
+
 	}
 
+	[Header("Item Spawner")]
+	public ItemSpawner itemSpawner;
+	[Header("Enemy Spawner")]
+	public EnemySpawner enemySpawner;
+	private List<GameObject> spawnedRooms = new List<GameObject>();
+	public List<GameObject> spawnedItems = new List<GameObject>();
+	public List<GameObject> spawnedEnemies = new List<GameObject>();
 	private struct RoomPath
 	{
 		public Vector2Int position;
@@ -258,6 +288,62 @@ public class Generator : MonoBehaviour
 
 			roomMap[roomPos] = r;
 		}
+	}
+	private void CleanUp()
+	{
+		// Détruire toutes les salles générées
+		foreach (GameObject room in spawnedRooms)
+		{
+			if (room != null)
+				#if !UNITY_EDITOR
+					Destroy(room); // En mode jeu
+				#else
+					DestroyImmediate(room); // En mode édition
+				#endif
+		}
+		spawnedRooms.Clear();
+
+		// Détruire tous les items générés
+		foreach (GameObject item in spawnedItems)
+		{
+			if (item != null)
+			#if !UNITY_EDITOR
+					Destroy(item); // En mode jeu
+			#else
+					DestroyImmediate(item); // En mode édition
+			#endif
+		}
+		spawnedItems.Clear();
+
+		// Détruire tous les ennemis générés
+		foreach (GameObject enemy in spawnedEnemies)
+		{
+			if (enemy != null)
+			#if !UNITY_EDITOR
+					Destroy(enemy); // En mode jeu
+			#else
+					DestroyImmediate(enemy); // En mode édition
+			#endif
+		}
+		spawnedEnemies.Clear();
+
+		// Nettoyer la tilemap
+		if (ground)
+			ground.ClearAllTiles();
+		if (background)
+			background.ClearAllTiles();
+		foreach(GameObject prop in props){
+			if(prop)
+			#if !UNITY_EDITOR
+					Destroy(prop); // En mode jeu
+			#else
+					DestroyImmediate(prop); // En mode édition
+			#endif
+		}
+	}
+	public void AddSpawnedItem(GameObject item)
+	{
+		spawnedItems.Add(item);
 	}
 }
 public enum Direction
