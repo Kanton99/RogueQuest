@@ -45,6 +45,7 @@ public class SceneInstantiation : MonoBehaviour
 		{
 			try
 			{
+				LevelTemplatePipeline.seed = seed;
 				UnityEditor.SceneTemplate.SceneTemplateService.Instantiate(sceneTemplate, true);
 				Debug.Log("Scene template instantiated successfully.");
 				return levelPath;

@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class LevelTemplatePipeline : ISceneTemplatePipeline
 {
+	public static int seed = 0;
+
 	public virtual bool IsValidTemplateForInstantiation(SceneTemplateAsset sceneTemplateAsset)
 	{
 		return true;
@@ -20,6 +22,8 @@ public class LevelTemplatePipeline : ISceneTemplatePipeline
 		GameObject[] gameObjects = scene.GetRootGameObjects();
 		GameObject generatorObject = ArrayUtility.Find(gameObjects, x => x.GetComponent<Generator>() != null);
 		Generator generator = generatorObject?.GetComponent<Generator>();
+		generator.randomSeed = false;
+		generator.seed = (uint)seed;
 		if (generator != null)
 		{
 			generator.GenerateLevelSteps();

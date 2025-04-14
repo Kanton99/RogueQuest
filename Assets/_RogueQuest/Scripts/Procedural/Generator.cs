@@ -13,7 +13,8 @@ public class Generator : MonoBehaviour
 {
 	[Header("Room Prefabs")]
 	public Room[] rooms;
-	public GameObject map;
+	public Tilemap ground;
+	public Tilemap background;
 
 	[Header("Room Settings")]
 	public Vector2Int ROOM_SIZE = new Vector2Int(16, 16);
@@ -83,7 +84,7 @@ public class Generator : MonoBehaviour
 
 	[ContextMenu("Place Rooms")]
 	private void PlaceRooms(){
-		map.GetComponent<Tilemap>().ClearAllTiles();
+		ground.GetComponent<Tilemap>().ClearAllTiles();
 		foreach(var posAndRoom in roomMap)
 		{
 			Room room = posAndRoom.Value;
@@ -97,23 +98,48 @@ public class Generator : MonoBehaviour
 
 	void PlaceRoom(GameObject room, int x, int y)
 	{
-		Tilemap tilemap = room.GetComponent<Tilemap>();
-		BoundsInt bounds = tilemap.cellBounds;
-		var size = tilemap.size;
-		TileBase[] roomTiles = tilemap.GetTilesBlock(bounds);
+		/* Room prefab structure
+		 room <TileMap>
+			Props
+				[0]
+				[1]
+			Mur <TileMap>
+		 */
+		Tilemap groundTileMap = room.GetComponent<Tilemap>();
+		Tilemap backgroundTilemap = null;
+		if(room.transform.childCount > 2)
+			backgroundTilemap = room.transform.GetChild(1).GetComponent<Tilemap>();
+		BoundsInt bounds = ground.cellBounds;
+		var size = ground.size;
+		TileBase[] groundTiles = ground.GetTilesBlock(bounds);
+		TileBase[] backgroundTiles = null;
+		if(backgroundTilemap)
+			backgroundTiles = backgroundTilemap.GetTilesBlock(bounds);
 
 		for (int xi = 0; xi < bounds.size.x; xi++)
 		{
 			for (int yi = 0; yi < bounds.size.y; yi++)
 			{
-				TileBase tile = roomTiles[xi + yi * bounds.size.x];
+				TileBase tile = groundTiles[xi + yi * bounds.size.x];
+				TileBase backgroundTile = null;
+				if(backgroundTilemap)
+					backgroundTile = backgroundTiles[xi + yi * bounds.size.x];
 				if (tile != null)
 				{
 					Vector3Int position = new Vector3Int(xi - (bounds.size.x / 2)+x, yi - (bounds.size.y / 2)+y, 0);
-					Tilemap mapTilemap = map.GetComponent<Tilemap>();
-					mapTilemap.SetTile(position, tile);
+					ground.SetTile(position, tile);
+					if(backgroundTilemap)
+						backgroundTilemap.SetTile(position, backgroundTile);
 				}
 			}
+		}
+		// TODO COPY PROPS
+		if(room.transform.childCount < 1) return;
+		GameObject props = room.transform.GetChild(0).gameObject;
+		for (int i = 0; i < props.transform.childCount; i++)
+		{
+			GameObject prop = props.transform.GetChild(i).gameObject;
+			GameObject.Instantiate(prop, new Vector3(x + prop.transform.position.x, y + prop.transform.position.y, 0), Quaternion.identity);
 		}
 	}
 
