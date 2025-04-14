@@ -91,8 +91,6 @@ public class Generator : MonoBehaviour
 	[ContextMenu("Place Rooms")]
 	private void PlaceRooms()
 	{
-  //      ground.ClearAllTiles();
-		//background.ClearAllTiles();
 		foreach (var posAndRoom in roomMap)
 		{
 			Room room = posAndRoom.Value;
@@ -150,7 +148,7 @@ public class Generator : MonoBehaviour
 			}
 		}
 		GameObject roomObject = new GameObject();
-		roomObject.transform.position = new Vector3(x*bounds.size.x, y*bounds.size.y, 0);
+		roomObject.transform.position = new Vector3(x, y, 0);
 		spawnedRooms.Add(roomObject);
 		// TODO COPY PROPS
 		if(room.transform.childCount < 1) return roomObject;

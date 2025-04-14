@@ -28,8 +28,8 @@ public class ItemSpawner : ScriptableObject
 
             // Calculer une position aléatoire dans la salle
             Vector2 randomPosition = new Vector2(
-                Random.Range(1, room.size.x),
-                Random.Range(1, room.size.y)
+                Random.Range(1, room.size.x)+roomInstance.transform.position.x+0.5f,
+                Random.Range(1, room.size.y)+roomInstance.transform.position.y+0.5f
             );
 
             // Instancier l'item dans la salle
