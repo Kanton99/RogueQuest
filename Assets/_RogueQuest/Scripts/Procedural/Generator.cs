@@ -142,7 +142,7 @@ public class Generator : MonoBehaviour
 					backgroundTile = backgroundTiles[xi + yi * bounds.size.x];
 				if (tile != null)
 				{
-					Vector3Int position = new Vector3Int(xi - (bounds.size.x / 2)+x, yi - (bounds.size.y / 2)+y, 0);
+					Vector3Int position = new Vector3Int(xi + x, yi + y, 0);
 					ground.SetTile(position, tile);
 					if(backgroundTilemap)
 						backgroundTilemap.SetTile(position, backgroundTile);
@@ -150,7 +150,7 @@ public class Generator : MonoBehaviour
 			}
 		}
 		GameObject roomObject = new GameObject();
-		roomObject.transform.position = new Vector3(x, y, 0);
+		roomObject.transform.position = new Vector3(x*bounds.size.x, y*bounds.size.y, 0);
 		spawnedRooms.Add(roomObject);
 		// TODO COPY PROPS
 		if(room.transform.childCount < 1) return roomObject;
