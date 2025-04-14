@@ -93,10 +93,33 @@ public class PlayerController : MonoBehaviour, InputSystem_Actions.IPlayerAction
         }
     }
 
-	public void OnAttack(InputAction.CallbackContext context)
-	{
-		throw new System.NotImplementedException();
-	}
+    public void OnAttack(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            // Définir une portée d'attaque
+            float attackRange = 1.5f;
+            int attackDamage = 10;
+
+            // Trouver les ennemis dans la portée
+            Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(transform.position, attackRange);
+
+            foreach (Collider2D enemy in hitEnemies)
+            {
+                // Vérifier si l'objet touché a un composant EntityStats
+                EntityStats enemyStats = enemy.GetComponent<EntityStats>();
+                if (enemyStats != null)
+                {
+                    // Infliger des dégâts à l'ennemi
+                    enemyStats.TakeDamage(attackDamage);
+                    Debug.Log($"Ennemi touché ! Vie restante : {enemyStats.currentHealth}");
+                }
+            }
+
+            // Ajouter des effets visuels ou sonores ici
+            Debug.Log("Attaque effectuée !");
+        }
+    }
 
 	public void OnInteract(InputAction.CallbackContext context)
 	{
@@ -123,8 +146,17 @@ public class PlayerController : MonoBehaviour, InputSystem_Actions.IPlayerAction
 		throw new System.NotImplementedException();
 	}
 
-	public void OnSprint(InputAction.CallbackContext context)
-	{
-		throw new System.NotImplementedException();
-	}
+    public void OnSprint(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            // Augmenter la vitesse de déplacement pour le sprint
+            moveSpeed *= 1.5f; // Par exemple, augmenter de 50%
+        }
+        else if (context.canceled)
+        {
+            // Réinitialiser la vitesse de déplacement
+            moveSpeed /= 1.5f; // Revenir à la vitesse normale
+        }
+    }
 }
