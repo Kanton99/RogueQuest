@@ -48,12 +48,16 @@ public class Generator : MonoBehaviour
 	private Dictionary<Vector2Int, int> weightMap;
 
 	[ContextMenu("Generate fully")]
-	private void GenerateLevelSteps() {
-		Path[] paths = GenerateInitialLayout();
-		SetupRoomMap(paths);
-		//CleanUp();
-		PlaceRooms();
-	}
+    private void GenerateLevelSteps()
+    {
+        // Nettoyer les objets générés précédemment
+        CleanUp();
+
+        // Générer le niveau
+        Path[] paths = GenerateInitialLayout();
+        SetupRoomMap(paths);
+        PlaceRooms();
+    }
 
 
 	[ContextMenu("Generate Layout")]
@@ -82,42 +86,71 @@ public class Generator : MonoBehaviour
 	
 
 	[ContextMenu("Place Rooms")]
-	private void PlaceRooms(){
-		map.GetComponent<Tilemap>().ClearAllTiles();
-		foreach(var posAndRoom in roomMap)
-		{
-			Room room = posAndRoom.Value;
-			Vector2Int pos = posAndRoom.Key;
-			if (room != null)
-			{
-				PlaceRoom(room.prefab, pos.x*room.size.x, pos.y*room.size.y);
-			}
-		}
-	}
+    private void PlaceRooms()
+    {
+        map.GetComponent<Tilemap>().ClearAllTiles();
+        foreach (var posAndRoom in roomMap)
+        {
+            Room room = posAndRoom.Value;
+            Vector2Int pos = posAndRoom.Key;
+            if (room != null)
+            {
+                // Placer la salle et obtenir son instance
+                GameObject roomInstance = PlaceRoom(room.prefab, pos.x * room.size.x, pos.y * room.size.y);
 
-	void PlaceRoom(GameObject room, int x, int y)
-	{
-		Tilemap tilemap = room.GetComponent<Tilemap>();
-		BoundsInt bounds = tilemap.cellBounds;
-		var size = tilemap.size;
-		TileBase[] roomTiles = tilemap.GetTilesBlock(bounds);
+                // Spawner les items dans la salle
+                if (itemSpawner != null)
+                {
+                    itemSpawner.SpawnItems(room, roomInstance);
+                }
 
-		for (int xi = 0; xi < bounds.size.x; xi++)
-		{
-			for (int yi = 0; yi < bounds.size.y; yi++)
-			{
-				TileBase tile = roomTiles[xi + yi * bounds.size.x];
-				if (tile != null)
-				{
-					Vector3Int position = new Vector3Int(xi - (bounds.size.x / 2)+x, yi - (bounds.size.y / 2)+y, 0);
-					Tilemap mapTilemap = map.GetComponent<Tilemap>();
-					mapTilemap.SetTile(position, tile);
-				}
-			}
-		}
-	}
+                // Spawner les ennemis dans la salle
+                if (enemySpawner != null)
+                {
+                    enemySpawner.SpawnEnemies(room, roomInstance);
+                }
+            }
+        }
+    }
 
-	private struct RoomPath
+    GameObject PlaceRoom(GameObject roomPrefab, int x, int y)
+    {
+        // Instancier la salle dans la scène
+        GameObject roomInstance = Instantiate(roomPrefab, new Vector3(x, y, 0), Quaternion.identity);
+
+        // Ajouter la salle générée à la liste
+        spawnedRooms.Add(roomInstance);
+
+        Tilemap tilemap = roomInstance.GetComponent<Tilemap>();
+        BoundsInt bounds = tilemap.cellBounds;
+        TileBase[] roomTiles = tilemap.GetTilesBlock(bounds);
+
+        for (int xi = 0; xi < bounds.size.x; xi++)
+        {
+            for (int yi = 0; yi < bounds.size.y; yi++)
+            {
+                TileBase tile = roomTiles[xi + yi * bounds.size.x];
+                if (tile != null)
+                {
+                    Vector3Int position = new Vector3Int(xi - (bounds.size.x / 2) + x, yi - (bounds.size.y / 2) + y, 0);
+                    Tilemap mapTilemap = map.GetComponent<Tilemap>();
+                    mapTilemap.SetTile(position, tile);
+                }
+            }
+        }
+
+        // Retourner l'instance de la salle
+        return roomInstance;
+    }
+    [Header("Item Spawner")]
+    public ItemSpawner itemSpawner;
+    [Header("Enemy Spawner")]
+    public EnemySpawner enemySpawner;
+    private List<GameObject> spawnedRooms = new List<GameObject>();
+    public List<GameObject> spawnedItems = new List<GameObject>();
+    public List<GameObject> spawnedEnemies = new List<GameObject>();
+
+    private struct RoomPath
 	{
 		public Vector2Int position;
 		public Path path;
@@ -233,6 +266,73 @@ public class Generator : MonoBehaviour
 			roomMap[roomPos] = r;
 		}
 	}
+    private void CleanUp()
+    {
+        // Détruire toutes les salles générées
+        foreach (GameObject room in spawnedRooms)
+        {
+            if (room != null)
+            {
+                if (Application.isPlaying)
+                {
+                    Destroy(room); // En mode jeu
+                }
+                else
+                {
+                    DestroyImmediate(room); // En mode édition
+                }
+            }
+        }
+        spawnedRooms.Clear();
+
+        // Détruire tous les items générés
+        foreach (GameObject item in spawnedItems)
+        {
+            if (item != null)
+            {
+                if (Application.isPlaying)
+                {
+                    Destroy(item); // En mode jeu
+                }
+                else
+                {
+                    DestroyImmediate(item); // En mode édition
+                }
+            }
+        }
+        spawnedItems.Clear();
+
+        // Détruire tous les ennemis générés
+        foreach (GameObject enemy in spawnedEnemies)
+        {
+            if (enemy != null)
+            {
+                if (Application.isPlaying)
+                {
+                    Destroy(enemy); // En mode jeu
+                }
+                else
+                {
+                    DestroyImmediate(enemy); // En mode édition
+                }
+            }
+        }
+        spawnedEnemies.Clear();
+
+        // Nettoyer la tilemap
+        if (map != null)
+        {
+            Tilemap tilemap = map.GetComponent<Tilemap>();
+            if (tilemap != null)
+            {
+                tilemap.ClearAllTiles();
+            }
+        }
+    }
+    public void AddSpawnedItem(GameObject item)
+    {
+        spawnedItems.Add(item);
+    }
 }
 public enum Direction
 {
