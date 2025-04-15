@@ -131,6 +131,8 @@ GameObject:
   - component: {fileID: 399627803}
   - component: {fileID: 399627802}
   - component: {fileID: 399627801}
+  - component: {fileID: 399627806}
+  - component: {fileID: 399627805}
   m_Layer: 0
   m_Name: player
   m_TagString: Player
@@ -164,7 +166,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!61 &399627802
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -281,6 +283,38 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &399627805
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 399627800}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24702ebaabd99bc4fa4a61d4167c1d68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 5
+  jumpForce: 10
+  dashSpeed: 20
+  dashDuration: 0.2
+--- !u!114 &399627806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 399627800}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24702ebaabd99bc4fa4a61d4167c1d68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 3
+  jumpForce: 3
+  dashSpeed: 6
+  dashDuration: 0.2
 --- !u!1 &406125199
 GameObject:
   m_ObjectHideFlags: 0
