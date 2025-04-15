@@ -46,7 +46,7 @@ public class Generator : MonoBehaviour
 
 	private Dictionary<Vector2Int, Room> roomMap;
 	private Dictionary<Vector2Int, int> weightMap;
-	private List<GameObject> props;
+	private List<GameObject> props = new List<GameObject>();
 
 	[ContextMenu("Generate fully")]
 	public void GenerateLevelSteps()
@@ -330,13 +330,16 @@ public class Generator : MonoBehaviour
 			ground.ClearAllTiles();
 		if (background)
 			background.ClearAllTiles();
-		foreach(GameObject prop in props){
-			if(prop)
-			#if !UNITY_EDITOR
-					Destroy(prop); // En mode jeu
-			#else
-					DestroyImmediate(prop); // En mode édition
-			#endif
+		if (props.Count > 0)
+		{
+			foreach(GameObject prop in props){
+				if(prop)
+				#if !UNITY_EDITOR
+						Destroy(prop); // En mode jeu
+				#else
+						DestroyImmediate(prop); // En mode édition
+				#endif
+			}
 		}
 	}
 	public void AddSpawnedItem(GameObject item)
