@@ -15,6 +15,7 @@ public class Generator : MonoBehaviour
 	public Room[] rooms;
 	public Tilemap ground;
 	public Tilemap background;
+	public TileBase wallTile;
 
 	[Header("Room Settings")]
 	public int levelRadius = 10;
@@ -26,14 +27,6 @@ public class Generator : MonoBehaviour
 	public Vector2Int from;
 	public Vector2Int to;
 
-	private static Dictionary<Direction, Direction> oppositeDirection = new Dictionary<Direction, Direction>
-	{
-		{Direction.Up, Direction.Down},
-		{Direction.Down, Direction.Up},
-		{Direction.Left, Direction.Right},
-		{Direction.Right, Direction.Left}
-	};
-
 	private static Dictionary<Direction, Vector2Int> directionVectors = new Dictionary<Direction, Vector2Int>
 	{
 		{Direction.Up, Vector2Int.up},
@@ -41,12 +34,12 @@ public class Generator : MonoBehaviour
 		{Direction.Left, Vector2Int.left},
 		{Direction.Right, Vector2Int.right}
 	};
-	private static Dictionary<Vector2Int, Direction> reversedDirectionVectors = ReverseDictionary(directionVectors);
 
 
 	private Dictionary<Vector2Int, Room> roomMap;
 	private Dictionary<Vector2Int, int> weightMap;
 	private List<GameObject> props = new List<GameObject>();
+	private GameObject propContainer;
 
 	[ContextMenu("Generate fully")]
 	public void GenerateLevelSteps()
@@ -73,10 +66,12 @@ public class Generator : MonoBehaviour
 		if (weightMap == null) weightMap = new Dictionary<Vector2Int, int>();
 		weightMap.Clear();
 
-		for(int x = -levelRadius; x<=levelRadius;x++){
+		if(propContainer==null) propContainer = new GameObject("Props");
+
+		for (int x = -levelRadius; x<=levelRadius;x++){
 			for(int y = -levelRadius; y<=levelRadius;y++){
 				Vector2Int pos = new Vector2Int(x, y);
-				weightMap[pos] = rng.NextInt(0, 100);
+				weightMap[pos] = rng.NextInt(0, 10);
 			}
 		}
 
@@ -123,40 +118,30 @@ public class Generator : MonoBehaviour
 		Tilemap groundTileMap = room.GetComponent<Tilemap>();
 		Tilemap backgroundTilemap = null;
 		if(room.transform.childCount > 2)
-			backgroundTilemap = room.transform.GetChild(1).GetComponent<Tilemap>();
+			backgroundTilemap = room.transform.Find("Mur").GetComponent<Tilemap>();
 		BoundsInt bounds = groundTileMap.cellBounds;
 		TileBase[] groundTiles = groundTileMap.GetTilesBlock(bounds);
 		TileBase[] backgroundTiles = null;
 		if(backgroundTilemap)
 			backgroundTiles = backgroundTilemap.GetTilesBlock(bounds);
 
-		for (int xi = 0; xi < bounds.size.x; xi++)
-		{
-			for (int yi = 0; yi < bounds.size.y; yi++)
-			{
-				TileBase tile = groundTiles[xi + yi * bounds.size.x];
-				TileBase backgroundTile = null;
-				if(backgroundTilemap)
-					backgroundTile = backgroundTiles[xi + yi * bounds.size.x];
-				if (tile != null)
-				{
-					Vector3Int position = new Vector3Int(xi + x, yi + y, 0);
-					ground.SetTile(position, tile);
-					if(backgroundTilemap)
-						backgroundTilemap.SetTile(position, backgroundTile);
-				}
-			}
-		}
+		BoundsInt placementBounds = new BoundsInt(new Vector3Int(x, y, 0), bounds.size);
+		ground.SetTilesBlock(placementBounds, groundTiles);
+		if(backgroundTiles != null)
+			background.SetTilesBlock(placementBounds, backgroundTiles);
+
 		GameObject roomObject = new GameObject();
 		roomObject.transform.position = new Vector3(x, y, 0);
 		spawnedRooms.Add(roomObject);
 		// TODO COPY PROPS
 		if(room.transform.childCount < 1) return roomObject;
-		GameObject prefabProps = room.transform.GetChild(0).gameObject;
+		GameObject prefabProps = room.transform.Find("Props").gameObject;
 		for (int i = 0; i < prefabProps.transform.childCount; i++)
 		{
 			GameObject prop = prefabProps.transform.GetChild(i).gameObject;
-			GameObject.Instantiate(prop, new Vector3(x + prop.transform.position.x, y + prop.transform.position.y, 0), Quaternion.identity);
+			Vector3 propPosition = new Vector3(9 + prop.transform.position.x, 5 + prop.transform.position.y, 0);
+			prop = GameObject.Instantiate(prop, roomObject.transform);
+			prop.transform.position = propPosition;
 			props.Add(prop);
 		}
 
@@ -178,8 +163,6 @@ public class Generator : MonoBehaviour
 		public int score;
 	}
 	Path BuildRandomPath(Vector2Int from, Vector2Int to){
-		int euclidianDistance = Mathf.Abs(from.x - to.x) + Mathf.Abs(from.y - to.y);
-
 		List<RoomPath> toVisit = new List<RoomPath>();
 
 		RoomPath start = new RoomPath();
@@ -231,29 +214,6 @@ public class Generator : MonoBehaviour
 		}
 		return null;
 
-	}
-
-	Direction[] getConnectedDirections(Vector2Int pos, Path path){
-		Vector2Int prevDir = path.prev != null ? path.prev.position - path.position : new Vector2Int();
-		Vector2Int nextDir = path.next != null ? path.next.position - path.position : new Vector2Int();
-
-		//Create an array of directions with only the ones that are not 0,0
-		List<Direction> directions = new List<Direction>();
-
-		if (prevDir != new Vector2Int(0, 0)) directions.Add(reversedDirectionVectors[prevDir]);
-		if (nextDir != new Vector2Int(0, 0)) directions.Add(reversedDirectionVectors[nextDir]);
-
-		return directions.ToArray();
-	}
-
-	private static Dictionary<TValue, TKey> ReverseDictionary<TKey, TValue>(Dictionary<TKey, TValue> original)
-	{
-		Dictionary<TValue, TKey> reversed = new Dictionary<TValue, TKey>();
-		foreach (var kvp in original)
-		{
-			reversed[kvp.Value] = kvp.Key;
-		}
-		return reversed;
 	}
 
 	private void SetupRoomMap(Path[] paths){

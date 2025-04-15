@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 51096676729887778, guid: a0a8cc482b3dd7a4c8fbe7be38292a8c, type: 3}
       propertyPath: m_Name
-      value: Armory Variant
+      value: ArmoryV2
       objectReference: {fileID: 0}
     - target: {fileID: 1656601174554836718, guid: a0a8cc482b3dd7a4c8fbe7be38292a8c, type: 3}
       propertyPath: m_SortingOrder
@@ -22,11 +22,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2629384260221643252, guid: a0a8cc482b3dd7a4c8fbe7be38292a8c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.1800327
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2629384260221643252, guid: a0a8cc482b3dd7a4c8fbe7be38292a8c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.980678
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2629384260221643252, guid: a0a8cc482b3dd7a4c8fbe7be38292a8c, type: 3}
       propertyPath: m_LocalPosition.z
