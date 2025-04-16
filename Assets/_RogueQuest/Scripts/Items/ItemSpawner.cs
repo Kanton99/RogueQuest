@@ -39,7 +39,7 @@ public class ItemSpawner : ScriptableObject
             spawnedItem.transform.parent = roomInstance.transform;
 
             // Ajouter l'item généré à la liste
-            Generator generator = Object.FindAnyObjectByType<Generator>();
+            LevelGenerator generator = Object.FindAnyObjectByType<LevelGenerator>();
             generator.spawnedItems.Add(spawnedItem);
         }
     }

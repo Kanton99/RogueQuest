@@ -20,8 +20,8 @@ public class LevelTemplatePipeline : ISceneTemplatePipeline
 	public virtual void AfterTemplateInstantiation(SceneTemplateAsset sceneTemplateAsset, Scene scene, bool isAdditive, string sceneName)
 	{
 		GameObject[] gameObjects = scene.GetRootGameObjects();
-		GameObject generatorObject = ArrayUtility.Find(gameObjects, x => x.GetComponent<Generator>() != null);
-		Generator generator = generatorObject?.GetComponent<Generator>();
+		GameObject generatorObject = ArrayUtility.Find(gameObjects, x => x.GetComponent<LevelGenerator>() != null);
+		LevelGenerator generator = generatorObject?.GetComponent<LevelGenerator>();
 		generator.randomSeed = false;
 		generator.seed = (uint)seed;
 		if (generator != null)

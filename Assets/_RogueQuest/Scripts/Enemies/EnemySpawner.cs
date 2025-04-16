@@ -39,7 +39,7 @@ public class EnemySpawner : ScriptableObject
             spawnedEnemy.transform.parent = roomInstance.transform;
 
             // Ajouter l'ennemi généré à la liste
-            Generator generator = Object.FindAnyObjectByType<Generator>();
+            LevelGenerator generator = Object.FindAnyObjectByType<LevelGenerator>();
             generator.spawnedEnemies.Add(spawnedEnemy);
         }
     }
