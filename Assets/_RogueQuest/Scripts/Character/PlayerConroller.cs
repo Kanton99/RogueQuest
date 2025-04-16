@@ -2,43 +2,48 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour, InputSystem_Actions.IPlayerActions
-{  
+{
     [Header("Movement Settings")]
     public float moveSpeed = 5f;
     public float jumpForce = 10f;
     public float dashSpeed = 20f;
     public float dashDuration = 0.2f;
 
+    [Header("Cooldown Settings")]
+    public float jumpCooldown = 1f; // Durée du cooldown pour le saut
+
     private Rigidbody2D rb;
     private Vector2 moveInput;
     private bool isJumping;
     private bool isDashing;
     private float dashTime;
+    private float jumpCooldownTimer; // Timer pour le cooldown du saut
 
-	private InputSystem_Actions m_Actions;             
-	private InputSystem_Actions.PlayerActions m_Player;    
+    private InputSystem_Actions m_Actions;
+    private InputSystem_Actions.PlayerActions m_Player;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-		m_Actions = new InputSystem_Actions();              // Create asset object.
-		m_Player = m_Actions.Player;                      // Extract action map object.
-		m_Player.AddCallbacks(this);                      // Register callback interface IPlayerActions.
+        m_Actions = new InputSystem_Actions(); // Create asset object.
+        m_Player = m_Actions.Player; // Extract action map object.
+        m_Player.AddCallbacks(this); // Register callback interface IPlayerActions.
     }
-   
-    void OnDestroy()   
-	{
+
+    void OnDestroy()
+    {
         m_Actions.Dispose();
     }
 
-	void OnEnable()
-	{
+    void OnEnable()
+    {
         m_Player.Enable();
-	}
+    }
 
-	void OnDisable()
-	{
+    void OnDisable()
+    {
         m_Player.Disable();
-	}
+    }
 
     private void Update()
     {
@@ -49,6 +54,12 @@ public class PlayerController : MonoBehaviour, InputSystem_Actions.IPlayerAction
             {
                 isDashing = false;
             }
+        }
+
+        // Réduire le timer du cooldown du saut
+        if (jumpCooldownTimer > 0)
+        {
+            jumpCooldownTimer -= Time.deltaTime;
         }
     }
 
@@ -68,6 +79,16 @@ public class PlayerController : MonoBehaviour, InputSystem_Actions.IPlayerAction
                 isJumping = false;
             }
         }
+
+        // Inverser le flip du sprite pour correspondre à la direction du mouvement
+        if (moveInput.x > 0)
+        {
+            transform.localScale = new Vector3(-1, 1, 1); // Inversé pour regarder à droite
+        }
+        else if (moveInput.x < 0)
+        {
+            transform.localScale = new Vector3(1, 1, 1); // Inversé pour regarder à gauche
+        }
     }
 
     public void OnMove(InputAction.CallbackContext context)
@@ -78,9 +99,11 @@ public class PlayerController : MonoBehaviour, InputSystem_Actions.IPlayerAction
 
     public void OnJump(InputAction.CallbackContext context)
     {
-        if (context.performed && !isDashing && !isJumping)
+        // Vérifier si le saut est possible (pas de cooldown actif)
+        if (context.performed && !isDashing && !isJumping && jumpCooldownTimer <= 0)
         {
             isJumping = true;
+            jumpCooldownTimer = jumpCooldown; // Réinitialiser le cooldown
         }
     }
 
@@ -121,30 +144,31 @@ public class PlayerController : MonoBehaviour, InputSystem_Actions.IPlayerAction
         }
     }
 
-	public void OnInteract(InputAction.CallbackContext context)
-	{
+    public void OnInteract(InputAction.CallbackContext context)
+    {
         Inventory inventory = gameObject.GetComponent<Inventory>();
-        if (inventory == null){
+        if (inventory == null)
+        {
             Debug.LogWarning("No Inventory");
             return;
         }
         inventory.PickUpItem();
-	}
+    }
 
-	public void OnCrouch(InputAction.CallbackContext context)
-	{
-		throw new System.NotImplementedException();
-	}
+    public void OnCrouch(InputAction.CallbackContext context)
+    {
+        throw new System.NotImplementedException();
+    }
 
-	public void OnPrevious(InputAction.CallbackContext context)
-	{
-		throw new System.NotImplementedException();
-	}
+    public void OnPrevious(InputAction.CallbackContext context)
+    {
+        throw new System.NotImplementedException();
+    }
 
-	public void OnNext(InputAction.CallbackContext context)
-	{
-		throw new System.NotImplementedException();
-	}
+    public void OnNext(InputAction.CallbackContext context)
+    {
+        throw new System.NotImplementedException();
+    }
 
     public void OnSprint(InputAction.CallbackContext context)
     {
