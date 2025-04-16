@@ -141,7 +141,7 @@ public class Generator : MonoBehaviour
 			GameObject prop = prefabProps.transform.GetChild(i).gameObject;
 			Vector3 propPosition = new Vector3(9 + prop.transform.position.x, 5 + prop.transform.position.y, 0);
 			prop = GameObject.Instantiate(prop, roomObject.transform);
-			prop.transform.position = propPosition;
+			prop.transform.localPosition = propPosition;
 			props.Add(prop);
 		}
 
