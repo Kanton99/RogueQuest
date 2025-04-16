@@ -22,7 +22,6 @@ public class LevelTemplatePipeline : ISceneTemplatePipeline
 		GameObject[] gameObjects = scene.GetRootGameObjects();
 		GameObject generatorObject = ArrayUtility.Find(gameObjects, x => x.GetComponent<LevelGenerator>() != null);
 		LevelGenerator generator = generatorObject?.GetComponent<LevelGenerator>();
-		generator.randomSeed = false;
 		generator.seed = (uint)seed;
 		if (generator != null)
 		{
@@ -33,9 +32,6 @@ public class LevelTemplatePipeline : ISceneTemplatePipeline
 			GameObject.Destroy(generatorObject);
 #endif
 		}
-		else
-		{
-			Debug.LogError("No Generator component found in the scene.");
-		}
+		else Debug.LogError("No Generator component found in the scene.");
 	}
 }

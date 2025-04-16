@@ -21,7 +21,7 @@ public class LevelGenerator : MonoBehaviour
 	public int randomnessStrength = 10;
 
 	[Header("Seed options")]
-	public bool randomSeed = true;
+	public bool randomSeed = false;
 	public uint seed;
 
 	public Vector2Int from;
@@ -60,21 +60,17 @@ public class LevelGenerator : MonoBehaviour
 	{
 		if (randomSeed) seed = (uint)UnityEngine.Random.Range(0, UInt32.MaxValue);
 		rng = new Unity.Mathematics.Random(seed);
+		to = new Vector2Int(rng.NextInt(), rng.NextInt());
 
 		if (roomMap == null) roomMap = new Dictionary<Vector2Int, Room>();
 		roomMap.Clear();
 
 		if (weightMap == null) weightMap = new Dictionary<Vector2Int, int>();
 		weightMap.Clear();
+		weightMap[from] = int.MaxValue;
+		weightMap[to] = int.MaxValue;
 
 		if(propContainer==null) propContainer = new GameObject("Props");
-
-		//for (int x = -levelRadius; x<=levelRadius;x++){
-		//	for(int y = -levelRadius; y<=levelRadius;y++){
-		//		Vector2Int pos = new Vector2Int(x, y);
-		//		weightMap[pos] = rng.NextInt(0, 10);
-		//	}
-		//}
 
 		Path path = new Path();
 		path.Append((BuildRandomPath(from + Vector2Int.right, to + Vector2Int.left)));
@@ -195,7 +191,7 @@ public class LevelGenerator : MonoBehaviour
 			{
 				Vector2Int neighborPos = current.position + directionVectors[direction];
 				if (!weightMap.ContainsKey(neighborPos))
-					weightMap[neighborPos] = rng.NextInt(0, 10);
+					weightMap[neighborPos] = rng.NextInt(0, randomnessStrength);
 
 				RoomPath neighbor = new RoomPath();
 				neighbor.position = neighborPos;

@@ -1,12 +1,14 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEditor.SceneTemplate;
 using System;
-using System.Threading.Tasks;
 
 public class SceneInstantiation : MonoBehaviour
 {
 	public SceneInstantiation Instance { get; private set; }
 	public SceneTemplateAsset sceneTemplate;
+
+	private Awaitable<string> newLevel;
 
 	private void Awake(){
 		if (Instance != null && Instance != this)
@@ -20,8 +22,8 @@ public class SceneInstantiation : MonoBehaviour
 		}
 	}
 
-	[ContextMenu("Tools/Generate Level")]
-	public async Task GenerateLevel()
+	[ContextMenu("Generate Next Level")]
+	public void GenerateLevel()
 	{
 		if(sceneTemplate == null)
 		{
@@ -29,16 +31,17 @@ public class SceneInstantiation : MonoBehaviour
 			return;
 		}
 		int seed = UnityEngine.Random.Range(0, int.MaxValue);
-		var generation = GenerateScene(seed);
-		for(int i = 0; i < 1000000; i++){
-	
-		}
-		await generation;
+		newLevel = GenerateScene(seed);
+	}
+
+	[ContextMenu("Load Next Level")]
+	public async void LoadLevel(){
+		await newLevel;
 	}
 
 	private async Awaitable<string> GenerateScene(int seed)
 	{
-		await Awaitable.MainThreadAsync();
+		await Awaitable.BackgroundThreadAsync();
 		string levelPath = "Assets/Scenes/Levels/"+seed;
 
 		if (sceneTemplate != null)
