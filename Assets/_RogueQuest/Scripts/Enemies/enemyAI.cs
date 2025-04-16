@@ -25,8 +25,12 @@ public class EnemyAI : MonoBehaviour
     private Vector3 currentDirection = Vector3.right; // Passé en private
     private float groundCheckDistance = 1.0f; // Passé en private
 
+    private CombatSystem combatSystem;
+
     void Start()
     {
+        combatSystem = GetComponent<CombatSystem>();
+
         // Initialiser avec l'état approprié en fonction du type d'ennemi
         switch (enemyType)
         {
@@ -39,7 +43,6 @@ public class EnemyAI : MonoBehaviour
             case EnemyType.Boss:
                 ChangeState(new IdleState(this));
                 break;
-
         }
     }
 
@@ -48,6 +51,12 @@ public class EnemyAI : MonoBehaviour
         if (currentState != null)
         {
             currentState.Execute();
+        }
+
+        // Check if the player is within attack range
+        if (Vector2.Distance(transform.position, playerTransform.position) <= attackRange)
+        {
+            combatSystem.Attack();
         }
     }
 
