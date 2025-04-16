@@ -175,7 +175,7 @@ public class LevelGenerator : MonoBehaviour
 		start.score = 0;
 		toVisit.Add(start);
 
-		for(int _ = 0; _ < 1000000; _++){
+		for(int _ = 0; _ < 10000; _++){
 			if (toVisit.Count == 0) return null;
 			RoomPath current = toVisit[0];
 			toVisit.RemoveAt(0);
