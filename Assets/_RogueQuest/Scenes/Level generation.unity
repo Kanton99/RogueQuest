@@ -505,7 +505,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b32415c092a85334fae419b499a40fcc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneTemplate: {fileID: 11400000, guid: 114a42eec3c21c94ab3f71ffc625033d, type: 2}
+  sceneTemplateName: Level generation
 --- !u!4 &1843554012
 Transform:
   m_ObjectHideFlags: 0
