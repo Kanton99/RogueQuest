@@ -18,7 +18,7 @@ public class LevelGenerator : MonoBehaviour
 	public TileBase wallTile;
 
 	[Header("Room Settings")]
-	public int levelRadius = 10;
+	public int randomnessStrength = 10;
 
 	[Header("Seed options")]
 	public bool randomSeed = true;
@@ -76,7 +76,13 @@ public class LevelGenerator : MonoBehaviour
 		//	}
 		//}
 
-		Path path = BuildRandomPath(from, to);
+		Path path = new Path();
+		path.Append((BuildRandomPath(from + Vector2Int.right, to + Vector2Int.left)));
+		path.position = to;
+		Path end = new Path();
+		end.position = from;
+		path.Append(end);
+		
 
 		Path[] paths = new Path[1];
 		paths[0] = path;
@@ -189,7 +195,8 @@ public class LevelGenerator : MonoBehaviour
 			{
 				Vector2Int neighborPos = current.position + directionVectors[direction];
 				if (!weightMap.ContainsKey(neighborPos))
-					weightMap[neighborPos] = rng.NextInt(0, 10);;
+					weightMap[neighborPos] = rng.NextInt(0, 10);
+
 				RoomPath neighbor = new RoomPath();
 				neighbor.position = neighborPos;
 				Path path = new Path();
@@ -337,5 +344,14 @@ public class Path{
 
 	public bool HasPosition(Vector2Int pos){
 		return pos == position || prev.HasPosition(pos);
+	}
+
+	public void Append(Path path){
+		if (prev != null)
+			prev.Append(path);
+		else{
+			prev = path;
+			path.next = this;
+		}
 	}
 }
