@@ -1,5 +1,7 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class EntityStats : MonoBehaviour
 {
@@ -13,9 +15,16 @@ public class EntityStats : MonoBehaviour
 
     private List<Effect> activeEffects = new List<Effect>();
 
+    [Header("Game Over Canvas")]
+    public GameObject gameOverCanvas; // Reference to the Game Over Canvas
+
     private void Awake()
     {
         currentHealth = baseMaxHealth;
+        if (gameOverCanvas != null)
+        {
+            gameOverCanvas.SetActive(false); // Ensure the Game Over Canvas is initially hidden
+        }
     }
 
     private void Update()
@@ -147,9 +156,11 @@ public class EntityStats : MonoBehaviour
 
         if (currentHealth <= 0)
         {
+            currentHealth = 0; // Ensure health does not go negative
             Die();
         }
     }
+
     public List<Effect> GetActiveEffects()
     {
         return activeEffects;
@@ -158,6 +169,23 @@ public class EntityStats : MonoBehaviour
     private void Die()
     {
         Debug.Log("Entité morte");
-        // Death logic...
+        if (gameOverCanvas != null)
+        {
+            gameOverCanvas.SetActive(true); // Show the Game Over Canvas
+        }
+        else
+        {
+            Debug.LogWarning("Game Over Canvas is not assigned.");
+        }
+        // Additional death logic, such as stopping the game or reloading the scene
+        // For example, you can reload the scene after a delay:
+        // StartCoroutine(ReloadSceneAfterDelay(2f));
+    }
+
+    // Optional: Coroutine to reload the scene after a delay
+    private IEnumerator ReloadSceneAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

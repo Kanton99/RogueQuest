@@ -72,27 +72,44 @@ public class Inventory : MonoBehaviour
 		}
 	}
 
-	public void PickUpItem()
-	{
-		Debug.Log("Piking up item");
-		ContactFilter2D contactFilter = new ContactFilter2D(); 
-		List<Collider2D> collisions = new List<Collider2D>();
-		
+    public void PickUpItem()
+    {
+        Debug.Log("Picking up item");
+        if (itemCollider == null)
+        {
+            Debug.LogWarning("Item collider is not assigned.");
+            return;
+        }
 
-		if(itemCollider.Overlap(contactFilter, collisions)==0)
-			return;
+        ContactFilter2D contactFilter = new ContactFilter2D();
+        List<Collider2D> collisions = new List<Collider2D>();
 
-		Collider2D closests = collisions[0];
-		float closestDistance = float.MaxValue;
-		foreach(Collider2D collider in collisions){
-			float distance = (collider.transform.position - transform.position).magnitude;
-			if(distance < closestDistance){
-				closestDistance = distance;
-				closests = collider;
-			}
-		}
+        if (itemCollider.Overlap(contactFilter, collisions) == 0)
+        {
+            Debug.LogWarning("No items to pick up.");
+            return;
+        }
 
-		AddItem(closests.transform.GetComponent<DroppedItem>().item);
-		Destroy(closests.transform.gameObject);
-	}
+        Collider2D closest = collisions[0];
+        float closestDistance = float.MaxValue;
+        foreach (Collider2D collider in collisions)
+        {
+            float distance = (collider.transform.position - transform.position).magnitude;
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closest = collider;
+            }
+        }
+
+        DroppedItem droppedItem = closest.transform.GetComponent<DroppedItem>();
+        if (droppedItem == null)
+        {
+            Debug.LogWarning("No DroppedItem component found on the closest collider.");
+            return;
+        }
+
+        AddItem(droppedItem.item);
+        Destroy(closest.transform.gameObject);
+    }
 }

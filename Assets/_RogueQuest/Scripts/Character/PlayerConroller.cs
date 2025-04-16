@@ -129,9 +129,9 @@ public class PlayerController : MonoBehaviour, InputSystem_Actions.IPlayerAction
 
             foreach (Collider2D enemy in hitEnemies)
             {
-                // Vérifier si l'objet touché a un composant EntityStats
+                // Vérifier si l'objet touché a un composant EntityStats et n'est pas le joueur lui-même
                 EntityStats enemyStats = enemy.GetComponent<EntityStats>();
-                if (enemyStats != null)
+                if (enemyStats != null && enemy.gameObject != gameObject)
                 {
                     // Infliger des dégâts à l'ennemi
                     enemyStats.TakeDamage(attackDamage);
