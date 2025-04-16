@@ -1,0 +1,99 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &5009559790834660378
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 51096676729887778, guid: a0a8cc482b3dd7a4c8fbe7be38292a8c, type: 3}
+      propertyPath: m_Name
+      value: Armory Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 1656601174554836718, guid: a0a8cc482b3dd7a4c8fbe7be38292a8c, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1778343110944376255, guid: a0a8cc482b3dd7a4c8fbe7be38292a8c, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2629384260221643252, guid: a0a8cc482b3dd7a4c8fbe7be38292a8c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 2.1800327
+      objectReference: {fileID: 0}
+    - target: {fileID: 2629384260221643252, guid: a0a8cc482b3dd7a4c8fbe7be38292a8c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.980678
+      objectReference: {fileID: 0}
+    - target: {fileID: 2629384260221643252, guid: a0a8cc482b3dd7a4c8fbe7be38292a8c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2629384260221643252, guid: a0a8cc482b3dd7a4c8fbe7be38292a8c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2629384260221643252, guid: a0a8cc482b3dd7a4c8fbe7be38292a8c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2629384260221643252, guid: a0a8cc482b3dd7a4c8fbe7be38292a8c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2629384260221643252, guid: a0a8cc482b3dd7a4c8fbe7be38292a8c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2629384260221643252, guid: a0a8cc482b3dd7a4c8fbe7be38292a8c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2629384260221643252, guid: a0a8cc482b3dd7a4c8fbe7be38292a8c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2629384260221643252, guid: a0a8cc482b3dd7a4c8fbe7be38292a8c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2653403256548998946, guid: a0a8cc482b3dd7a4c8fbe7be38292a8c, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3190805578088948561, guid: a0a8cc482b3dd7a4c8fbe7be38292a8c, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3913814557472887509, guid: a0a8cc482b3dd7a4c8fbe7be38292a8c, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4648815752740868804, guid: a0a8cc482b3dd7a4c8fbe7be38292a8c, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7450842248085817106, guid: a0a8cc482b3dd7a4c8fbe7be38292a8c, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8042501723742179294, guid: a0a8cc482b3dd7a4c8fbe7be38292a8c, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8334387743267532827, guid: a0a8cc482b3dd7a4c8fbe7be38292a8c, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8646815575057467953, guid: a0a8cc482b3dd7a4c8fbe7be38292a8c, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a0a8cc482b3dd7a4c8fbe7be38292a8c, type: 3}
