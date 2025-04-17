@@ -1,15 +1,18 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class DroppedItem : MonoBehaviour
+namespace RogueQuest.Items
 {
-	public Item item;
-
-
-	private void Start()
+	public class DroppedItem : MonoBehaviour
 	{
-		SpriteRenderer sprite = gameObject.GetComponent<SpriteRenderer>();
-		if (sprite)
-			sprite.sprite = item.sprite;
+		public Item item;
+
+
+		private void Start()
+		{
+			SpriteRenderer sprite = gameObject.GetComponent<SpriteRenderer>();
+			if (sprite)
+				sprite.sprite = item.sprite;
+		}
 	}
 }

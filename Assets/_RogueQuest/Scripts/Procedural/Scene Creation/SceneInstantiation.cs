@@ -10,7 +10,7 @@ using UnityEngine.UI;
 public class SceneInstantiation : MonoBehaviour
 {
 	public SceneInstantiation Instance { get; private set; }
-	public LevelGenerator levelGenerator;
+	public RogueQuest.LevelGeneration.LevelGenerator levelGenerator;
 	public Image fadeoutCanvas;
 	public float fadeTime = 1f;
 
