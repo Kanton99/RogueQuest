@@ -34,7 +34,7 @@ public class CombatSystem : MonoBehaviour
         foreach (Collider2D hit in hits)
         {
             EntityStats targetStats = hit.GetComponent<EntityStats>();
-            if (targetStats != null)
+            if (targetStats != null && hit.gameObject != gameObject) // Ensure the target is not the attacker
             {
                 DamageHandler.ApplyDamage(targetStats, equippedWeapon.damage);
             }
