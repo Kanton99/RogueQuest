@@ -258,12 +258,10 @@ namespace RogueQuest.LevelGeneration
 			foreach (GameObject room in spawnedRooms)
 			{
 				if (room != null)
-#if !UNITY_EDITOR
-					Destroy(room); // En mode jeu
-#else
-					DestroyImmediate(room); // En mode édition
-#endif
-			}
+					if (Application.isPlaying)
+						Destroy(room); // En mode jeu
+					else
+						DestroyImmediate(room); // En mode édition
 			spawnedRooms.Clear();
 
 			// Détruire tous les items générés
