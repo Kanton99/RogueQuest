@@ -1,22 +1,25 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Weapon", menuName = "Items/Weapon")]
-public class Weapon : Item
+namespace RogueQuest.Items
 {
-	[Header("Weapon Stats")]
-	public int damage;
-	public float attackSpeed;
-	public float range;
-
-	public override void Use()
+	[CreateAssetMenu(fileName = "Weapon", menuName = "Items/Weapon")]
+	public class Weapon : Item
 	{
-		Debug.Log($"Attacking with {itemName} for {damage} damage");
-	}
+		[Header("Weapon Stats")]
+		public int damage;
+		public float attackSpeed;
+		public float range;
 
-	public override void PickUp()
-	{
-		base.PickUp();
-		Debug.Log($"Picking up {itemName} with damage {damage}");
+		public override void Use()
+		{
+			Debug.Log($"Attacking with {itemName} for {damage} damage");
+		}
+
+		public override void PickUp()
+		{
+			base.PickUp();
+			Debug.Log($"Picking up {itemName} with damage {damage}");
+		}
 	}
 }

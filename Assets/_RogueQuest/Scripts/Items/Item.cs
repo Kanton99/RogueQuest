@@ -1,18 +1,21 @@
 using UnityEngine;
-
-public abstract class Item : ScriptableObject
+namespace RogueQuest.Items
 {
-    [Header("Item Properties")]
-	public Sprite sprite;
-    public string itemName;
-    public string description;
-
-    public virtual void Use(){
-        Debug.Log($"Using {itemName}");
-    }
-
-    public virtual void PickUp()
+    public abstract class Item : ScriptableObject
     {
-		Debug.Log($"Picking up {itemName}");
-	}
+        [Header("Item Properties")]
+        public Sprite sprite;
+        public string itemName;
+        public string description;
+
+        public virtual void Use()
+        {
+            Debug.Log($"Using {itemName}");
+        }
+
+        public virtual void PickUp()
+        {
+            Debug.Log($"Picking up {itemName}");
+        }
+    }
 }

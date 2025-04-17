@@ -1,73 +1,77 @@
 using UnityEngine;
 
-public class CombatSystem : MonoBehaviour
+
+namespace RogueQuest
 {
-    [Header("Combat Settings")]
-    public LayerMask targetLayer; // Cible des attaques (ennemis, joueur, etc.)
-    public float attackCooldown = 1f; // Temps entre deux attaques
-
-    private float lastAttackTime;
-
-    private void Update()
+    public class CombatSystem : MonoBehaviour
     {
-        // Exemple d'attaque déclenchée par une touche (Espace)
-        if (Input.GetKeyDown(KeyCode.Space) && Time.time >= lastAttackTime + attackCooldown)
-        {
-            Attack();
-            lastAttackTime = Time.time;
-        }
-    }
+        [Header("Combat Settings")]
+        public LayerMask targetLayer; // Cible des attaques (ennemis, joueur, etc.)
+        public float attackCooldown = 1f; // Temps entre deux attaques
 
-    public void Attack()
-    {
-        Inventory inventory = GetComponent<Inventory>();
-        if (inventory == null || inventory.weapon == null)
-        {
-            Debug.LogWarning("Aucune arme équipée pour attaquer.");
-            return;
-        }
+        private float lastAttackTime;
 
-        Weapon equippedWeapon = inventory.weapon;
-
-        // Détection des cibles dans la portée de l'arme
-        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, equippedWeapon.range, targetLayer);
-        foreach (Collider2D hit in hits)
+        private void Update()
         {
-            EntityStats targetStats = hit.GetComponent<EntityStats>();
-            if (targetStats != null && hit.gameObject != gameObject) // Ensure the target is not the attacker
+            // Exemple d'attaque déclenchée par une touche (Espace)
+            if (Input.GetKeyDown(KeyCode.Space) && Time.time >= lastAttackTime + attackCooldown)
             {
-                DamageHandler.ApplyDamage(targetStats, equippedWeapon.damage);
+                Attack();
+                lastAttackTime = Time.time;
+            }
+        }
+
+        public void Attack()
+        {
+            Items.Inventory inventory = GetComponent<Items.Inventory>();
+            if (inventory == null || inventory.weapon == null)
+            {
+                Debug.LogWarning("Aucune arme équipée pour attaquer.");
+                return;
+            }
+
+            Items.Weapon equippedWeapon = inventory.weapon;
+
+            // Détection des cibles dans la portée de l'arme
+            Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, equippedWeapon.range, targetLayer);
+            foreach (Collider2D hit in hits)
+            {
+                EntityStats targetStats = hit.GetComponent<EntityStats>();
+                if (targetStats != null && hit.gameObject != gameObject) // Ensure the target is not the attacker
+                {
+                    DamageHandler.ApplyDamage(targetStats, equippedWeapon.damage);
+                }
+            }
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            // Affiche la portée de l'arme équipée dans l'éditeur
+            Items.Inventory inventory = GetComponent<Items.Inventory>();
+            if (inventory != null && inventory.weapon != null)
+            {
+                Gizmos.color = Color.red;
+                Gizmos.DrawWireSphere(transform.position, inventory.weapon.range);
             }
         }
     }
 
-    private void OnDrawGizmosSelected()
+    public static class DamageHandler
     {
-        // Affiche la portée de l'arme équipée dans l'éditeur
-        Inventory inventory = GetComponent<Inventory>();
-        if (inventory != null && inventory.weapon != null)
+        /// <summary>
+        /// Applique des dégâts à une entité.
+        /// </summary>
+        /// <param name="target">L'entité cible.</param>
+        /// <param name="damage">Les dégâts infligés.</param>
+        public static void ApplyDamage(EntityStats target, int damage)
         {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(transform.position, inventory.weapon.range);
-        }
-    }
-}
+            if (target == null)
+            {
+                Debug.LogWarning("Cible invalide pour appliquer des dégâts.");
+                return;
+            }
 
-public static class DamageHandler
-{
-    /// <summary>
-    /// Applique des dégâts à une entité.
-    /// </summary>
-    /// <param name="target">L'entité cible.</param>
-    /// <param name="damage">Les dégâts infligés.</param>
-    public static void ApplyDamage(EntityStats target, int damage)
-    {
-        if (target == null)
-        {
-            Debug.LogWarning("Cible invalide pour appliquer des dégâts.");
-            return;
+            target.TakeDamage(damage);
         }
-
-        target.TakeDamage(damage);
     }
 }

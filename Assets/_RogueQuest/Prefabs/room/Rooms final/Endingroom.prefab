@@ -1362,11 +1362,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2030514036813814415, guid: b101017de3a3ef247ad0fbf86a47e152, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.1800327
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2030514036813814415, guid: b101017de3a3ef247ad0fbf86a47e152, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.980678
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2030514036813814415, guid: b101017de3a3ef247ad0fbf86a47e152, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1402,7 +1402,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4099734608592564057, guid: b101017de3a3ef247ad0fbf86a47e152, type: 3}
       propertyPath: m_Name
-      value: ChurchV2 Variant
+      value: Endingroom
       objectReference: {fileID: 0}
     - target: {fileID: 4324783694927455756, guid: b101017de3a3ef247ad0fbf86a47e152, type: 3}
       propertyPath: m_Tiles.Array.size
