@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System;   
 
 public class EntityStats : MonoBehaviour
 {
@@ -11,77 +12,37 @@ public class EntityStats : MonoBehaviour
     public int baseDefense = 5;
     public float baseMoveSpeed = 5f;
 
-    public int currentHealth;
+    private int _currentHealthBackingField;
+    public int currentHealth
+    {
+        get => _currentHealthBackingField;
+        set
+        {
+            if (_currentHealthBackingField != value)
+            {
+                Debug.Log($"Current health of {gameObject.name} changed from {_currentHealthBackingField} to {value}");
+                _currentHealthBackingField = value;
+                OnHealthChanged?.Invoke(currentHealth, GetMaxHealth());
+                Debug.Log($"OnHealthChanged event invoked for {gameObject.name}");
+            }
+        }
+    }
+
+    public event Action<int, int> OnHealthChanged; // Event to notify health changes
 
     private List<Effect> activeEffects = new List<Effect>();
 
     [Header("Game Over Canvas")]
-    public GameObject gameOverCanvas; // Reference to the Game Over Canvas
+    public GameObject gameOverCanvas;
 
     private void Awake()
     {
         currentHealth = baseMaxHealth;
+        Debug.Log($"Awake called on {gameObject.name}. Current health set to: {currentHealth}");
         if (gameOverCanvas != null)
         {
-            gameOverCanvas.SetActive(false); // Ensure the Game Over Canvas is initially hidden
+            gameOverCanvas.SetActive(false);
         }
-    }
-
-    private void Update()
-    {
-        if (activeEffects.Count > 0)
-        {
-            for (int i = activeEffects.Count - 1; i >= 0; i--)
-            {
-                if (activeEffects[i].Update(Time.deltaTime))
-                {
-                    activeEffects[i].Remove(this);
-                    activeEffects.RemoveAt(i);
-                }
-            }
-        }
-    }
-
-    public int GetAttack()
-    {
-        float total = baseAttackPower;
-        foreach (var effect in activeEffects)
-        {
-            if (effect is StatModifier mod && mod.statType == StatType.Attack)
-            {
-                total += mod.value;
-            }
-        }
-
-        return Mathf.RoundToInt(total);
-    }
-
-    public float GetMoveSpeed()
-    {
-        float total = baseMoveSpeed;
-        foreach (var effect in activeEffects)
-        {
-            if (effect is StatModifier mod && mod.statType == StatType.MoveSpeed)
-            {
-                total += mod.value;
-            }
-        }
-
-        return total;
-    }
-
-    public int GetDefense()
-    {
-        float total = baseDefense;
-        foreach (var effect in activeEffects)
-        {
-            if (effect is StatModifier mod && mod.statType == StatType.Defense)
-            {
-                total += mod.value;
-            }
-        }
-
-        return Mathf.RoundToInt(total);
     }
 
     public int GetMaxHealth()
@@ -98,52 +59,18 @@ public class EntityStats : MonoBehaviour
         return Mathf.RoundToInt(total);
     }
 
-    public void ApplyEffect(Effect effect)
+    public int GetDefense()
     {
-        effect.Apply(this);
-        activeEffects.Add(effect);
-    }
+        float total = baseDefense;
+        foreach (var effect in activeEffects)
+        {
+            if (effect is StatModifier mod && mod.statType == StatType.Defense)
+            {
+                total += mod.value;
+            }
+        }
 
-    public void AddStatModifier(StatModifier modifier)
-    {
-        activeEffects.Add(modifier);
-    }
-
-    public void RemoveStatModifier(StatModifier modifier)
-    {
-        activeEffects.Remove(modifier);
-    }
-
-    public void ApplyTemporaryModifier(StatType statType, float value, float duration)
-    {
-        StatModifier modifier = new StatModifier(statType, value, duration);
-        ApplyEffect(modifier);
-    }
-
-    public void ApplyPermanentModifier(StatType statType, float value)
-    {
-        StatModifier modifier = new StatModifier(statType, value, float.MaxValue);
-        ApplyEffect(modifier);
-    }
-
-    public void ApplySpeedBoost(float value, float duration)
-    {
-        ApplyTemporaryModifier(StatType.MoveSpeed, value, duration);
-    }
-
-    public void ApplyAttackBoost(float value, float duration)
-    {
-        ApplyTemporaryModifier(StatType.Attack, value, duration);
-    }
-
-    public void ApplyDefenseBoost(float value, float duration)
-    {
-        ApplyTemporaryModifier(StatType.Defense, value, duration);
-    }
-
-    public void ApplyHealthBoost(float value, float duration)
-    {
-        ApplyTemporaryModifier(StatType.MaxHealth, value, duration);
+        return Mathf.RoundToInt(total);
     }
 
     public void TakeDamage(int damage)
@@ -152,13 +79,33 @@ public class EntityStats : MonoBehaviour
         int damageTaken = Mathf.Max(damage - defense, 0);
         currentHealth -= damageTaken;
 
-        Debug.Log($"Dégâts restants : {damageTaken}. Vie : {currentHealth}");
+        currentHealth = Mathf.Max(currentHealth, 0);
+
+        Debug.Log($"TakeDamage called on {gameObject.name}. Damage: {damage}, Remaining Health: {currentHealth}");
 
         if (currentHealth <= 0)
         {
-            currentHealth = 0; // Ensure health does not go negative
             Die();
         }
+    }
+
+    public void ApplyEffect(Effect effect)
+    {
+        effect.Apply(this);
+        activeEffects.Add(effect);
+        Debug.Log($"Effect applied: {effect.GetType().Name} to {gameObject.name}");
+    }
+
+    public void AddStatModifier(StatModifier modifier)
+    {
+        activeEffects.Add(modifier);
+        Debug.Log($"Added {modifier.statType} modifier with value {modifier.value} to {gameObject.name}.");
+    }
+
+    public void RemoveStatModifier(StatModifier modifier)
+    {
+        activeEffects.Remove(modifier);
+        Debug.Log($"Removed {modifier.statType} modifier with value {modifier.value} from {gameObject.name}.");
     }
 
     public List<Effect> GetActiveEffects()
@@ -171,21 +118,11 @@ public class EntityStats : MonoBehaviour
         Debug.Log("Entité morte");
         if (gameOverCanvas != null)
         {
-            gameOverCanvas.SetActive(true); // Show the Game Over Canvas
+            gameOverCanvas.SetActive(true);
         }
         else
         {
             Debug.LogWarning("Game Over Canvas is not assigned.");
         }
-        // Additional death logic, such as stopping the game or reloading the scene
-        // For example, you can reload the scene after a delay:
-        // StartCoroutine(ReloadSceneAfterDelay(2f));
-    }
-
-    // Optional: Coroutine to reload the scene after a delay
-    private IEnumerator ReloadSceneAfterDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

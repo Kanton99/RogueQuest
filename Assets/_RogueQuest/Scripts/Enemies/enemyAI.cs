@@ -54,9 +54,13 @@ public class EnemyAI : MonoBehaviour
         }
 
         // Check if the player is within attack range
-        if (Vector2.Distance(transform.position, playerTransform.position) <= attackRange)
+        if (playerTransform != null && Vector2.Distance(transform.position, playerTransform.position) <= attackRange)
         {
-            combatSystem.Attack();
+            CombatSystem combatSystem = GetComponent<CombatSystem>();
+            if (combatSystem != null)
+            {
+                combatSystem.Attack();
+            }
         }
     }
 

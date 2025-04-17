@@ -20,14 +20,13 @@ public class HUDManager : MonoBehaviour
     public Sprite moveSpeedBuffSprite;
     public Sprite maxHealthBuffSprite;
     [Header("Quickslot Placeholder")]
-    public Sprite placeholderSprite; // Placeholder sprite for empty quickslots
+    public Sprite placeholderSprite;
 
     private EntityStats playerStats;
     private Dictionary<StatType, Sprite> statTypeToSprite;
 
     private void Start()
     {
-        // Assurez-vous que le joueur est assigné.
         playerStats = Object.FindFirstObjectByType<EntityStats>();
         if (playerStats == null)
         {
@@ -35,57 +34,51 @@ public class HUDManager : MonoBehaviour
             return;
         }
 
-        // Initialiser la barre de vie.
+        // Subscribe to the OnHealthChanged event
+        playerStats.OnHealthChanged += UpdateHealthBar;
+        Debug.Log("HUDManager successfully subscribed to OnHealthChanged event");
+
+        // Initialize the health bar
         healthSlider.maxValue = playerStats.GetMaxHealth();
         healthSlider.value = playerStats.currentHealth;
-
-        // Initialiser le dictionnaire des sprites.
-        statTypeToSprite = new Dictionary<StatType, Sprite>
-        {
-            { StatType.Attack, attackBuffSprite },
-            { StatType.Defense, defenseBuffSprite },
-            { StatType.MoveSpeed, moveSpeedBuffSprite },
-            { StatType.MaxHealth, maxHealthBuffSprite }
-        };
     }
 
-    private void Update()
+    private void OnDestroy()
     {
-        if (playerStats == null) return;
+        // Unsubscribe from the event to avoid memory leaks
+        if (playerStats != null)
+        {
+            playerStats.OnHealthChanged -= UpdateHealthBar;
+        }
+    }
 
-        // Mettre à jour la barre de vie.
-        healthSlider.maxValue = playerStats.GetMaxHealth();
-        healthSlider.value = playerStats.currentHealth;
-
-        // Mettre à jour les buffs et debuffs.
-        UpdateBuffIcons();
+    private void UpdateHealthBar(int currentHealth, int maxHealth)
+    {
+        healthSlider.maxValue = maxHealth;
+        healthSlider.value = currentHealth;
+        Debug.Log($"HUD updated: Current Health = {currentHealth}, Max Health = {maxHealth}");
     }
 
     private void UpdateBuffIcons()
     {
-        // Supprimer toutes les icônes existantes.
         foreach (Transform child in buffContainer)
         {
             Destroy(child.gameObject);
         }
 
-        // Ajouter des icônes pour chaque effet actif.
         foreach (var effect in playerStats.GetActiveEffects())
         {
             if (effect is StatModifier statModifier)
             {
                 GameObject icon = Instantiate(buffIconPrefab, buffContainer);
 
-                // Assigner le sprite correspondant au StatType.
                 Image iconImage = icon.GetComponentInChildren<Image>();
                 if (iconImage != null && statTypeToSprite.ContainsKey(statModifier.statType))
                 {
                     iconImage.sprite = statTypeToSprite[statModifier.statType];
-                    // Appliquer une couleur différente pour les buffs et debuffs.
                     iconImage.color = statModifier.isBuff ? Color.green : Color.red;
                 }
 
-                // Optionnel : Ajouter du texte pour afficher des informations supplémentaires.
                 Text iconText = icon.GetComponentInChildren<Text>();
                 if (iconText != null)
                 {
@@ -101,15 +94,13 @@ public class HUDManager : MonoBehaviour
         {
             if (i < inventory.consumables.Length && inventory.consumables[i] != null)
             {
-                // Update the quickslot icon with the consumable's sprite
                 quickSlotIcons[i].sprite = inventory.consumables[i].sprite;
-                quickSlotIcons[i].color = Color.white; // Ensure the icon is fully visible
+                quickSlotIcons[i].color = Color.white;
             }
             else
             {
-                // Use the placeholder sprite for empty quickslots
                 quickSlotIcons[i].sprite = placeholderSprite;
-                quickSlotIcons[i].color = new Color(1, 1, 1, 0.5f); // Semi-transparent to indicate it's empty
+                quickSlotIcons[i].color = new Color(1, 1, 1, 0.5f);
             }
         }
     }

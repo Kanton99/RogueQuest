@@ -20,14 +20,16 @@ public class CombatSystem : MonoBehaviour
 
     public void Attack()
     {
-        Inventory inventory = GetComponent<Inventory>();
-        if (inventory == null)
+        if (Time.time < lastAttackTime + attackCooldown)
         {
-            Debug.LogWarning("No Inventory component found on this GameObject.");
+
             return;
         }
 
-        if (inventory.weapon == null)
+        lastAttackTime = Time.time; // Update the last attack time
+
+        Inventory inventory = GetComponent<Inventory>();
+        if (inventory == null || inventory.weapon == null)
         {
             Debug.LogWarning("Aucune arme équipée pour attaquer.");
             return;
@@ -39,9 +41,24 @@ public class CombatSystem : MonoBehaviour
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, equippedWeapon.range, targetLayer);
         foreach (Collider2D hit in hits)
         {
-            EntityStats targetStats = hit.GetComponent<EntityStats>();
-            if (targetStats != null && hit.gameObject != gameObject) // Ensure the target is not the attacker
+            // Ensure the target is not the attacker itself
+            if (hit.gameObject == gameObject)
             {
+                Debug.Log("Skipping self.");
+                continue;
+            }
+
+            // Ensure the target has the "Player" tag
+            if (!hit.CompareTag("Player"))
+            {
+                Debug.Log($"Skipping non-player target: {hit.gameObject.name}");
+                continue;
+            }
+
+            EntityStats targetStats = hit.GetComponent<EntityStats>();
+            if (targetStats != null)
+            {
+                Debug.Log($"Attacking target: {hit.gameObject.name}");
                 DamageHandler.ApplyDamage(targetStats, equippedWeapon.damage);
             }
         }
@@ -61,11 +78,6 @@ public class CombatSystem : MonoBehaviour
 
 public static class DamageHandler
 {
-    /// <summary>
-    /// Applique des dégâts à une entité.
-    /// </summary>
-    /// <param name="target">L'entité cible.</param>
-    /// <param name="damage">Les dégâts infligés.</param>
     public static void ApplyDamage(EntityStats target, int damage)
     {
         if (target == null)
@@ -74,6 +86,7 @@ public static class DamageHandler
             return;
         }
 
+        Debug.Log($"Applying {damage} damage to: {target.gameObject.name}");
         target.TakeDamage(damage);
     }
 }
