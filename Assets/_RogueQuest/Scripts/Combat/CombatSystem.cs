@@ -3,14 +3,14 @@ using UnityEngine;
 public class CombatSystem : MonoBehaviour
 {
     [Header("Combat Settings")]
-    public LayerMask targetLayer; // Cible des attaques (ennemis, joueur, etc.)
-    public float attackCooldown = 1f; // Temps entre deux attaques
+    public LayerMask targetLayer; // Target layer for attacks
+    public float attackCooldown = 1f; // Time between attacks
 
     private float lastAttackTime;
 
     private void Update()
     {
-        // Exemple d'attaque déclenchée par une touche (Espace)
+        // Example attack triggered by pressing Space
         if (Input.GetKeyDown(KeyCode.Space) && Time.time >= lastAttackTime + attackCooldown)
         {
             Attack();
@@ -21,7 +21,13 @@ public class CombatSystem : MonoBehaviour
     public void Attack()
     {
         Inventory inventory = GetComponent<Inventory>();
-        if (inventory == null || inventory.weapon == null)
+        if (inventory == null)
+        {
+            Debug.LogWarning("No Inventory component found on this GameObject.");
+            return;
+        }
+
+        if (inventory.weapon == null)
         {
             Debug.LogWarning("Aucune arme équipée pour attaquer.");
             return;
@@ -29,7 +35,7 @@ public class CombatSystem : MonoBehaviour
 
         Weapon equippedWeapon = inventory.weapon;
 
-        // Détection des cibles dans la portée de l'arme
+        // Detect targets within the weapon's range
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, equippedWeapon.range, targetLayer);
         foreach (Collider2D hit in hits)
         {
@@ -43,7 +49,7 @@ public class CombatSystem : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        // Affiche la portée de l'arme équipée dans l'éditeur
+        // Visualize the weapon's range in the editor
         Inventory inventory = GetComponent<Inventory>();
         if (inventory != null && inventory.weapon != null)
         {

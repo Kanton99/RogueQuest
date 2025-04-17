@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdaead74ca997344485d19aede5f30a6, type: 3}
   m_Name: Fiole rouge
   m_EditorClassIdentifier: 
-  sprite: {fileID: 0}
-  itemName: 
+  sprite: {fileID: -3519430713812269455, guid: 96a7c554cc3114444a4adb0d2e312c4d, type: 3}
+  itemName: Potion de soin
   description: 
