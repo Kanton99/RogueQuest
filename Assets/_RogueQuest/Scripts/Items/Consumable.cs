@@ -3,7 +3,7 @@ using UnityEngine;
 namespace RogueQuest.Items
 {
 	[CreateAssetMenu(fileName = "Consumable", menuName = "Items/Consumable")]
-	class Consumable : Item
+	public class Consumable : Item
 	{
 		[Header("Consumable Properties")]
 		public Effect effect;

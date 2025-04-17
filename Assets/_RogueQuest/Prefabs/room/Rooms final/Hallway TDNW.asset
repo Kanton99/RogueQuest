@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefab: {fileID: 480248423769052686, guid: 6d087103581c2a548915c756679da51d, type: 3}
   size: {x: 32, y: 16}
-  directions: 000000000200000001000000
+  directions: 0000000002000000
   weight: 0

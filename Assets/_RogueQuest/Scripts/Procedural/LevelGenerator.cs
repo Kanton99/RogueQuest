@@ -58,7 +58,7 @@ namespace RogueQuest.LevelGeneration
 		{
 			if (randomSeed) seed = (uint)UnityEngine.Random.Range(0, UInt32.MaxValue);
 			rng = new Unity.Mathematics.Random(seed);
-			to = new Vector2Int(rng.NextInt(), rng.NextInt());
+			to = new Vector2Int(rng.NextInt(3, 10), rng.NextInt(-3,3));
 
 			if (roomMap == null) roomMap = new Dictionary<Vector2Int, Room>();
 			roomMap.Clear();
@@ -270,11 +270,12 @@ namespace RogueQuest.LevelGeneration
 			foreach (GameObject item in spawnedItems)
 			{
 				if (item != null)
-#if !UNITY_EDITOR
-					Destroy(item); // En mode jeu
-#else
-					DestroyImmediate(item); // En mode édition
-#endif
+				{
+					if (!Application.isPlaying)
+						Destroy(item); // En mode jeu
+					else
+						DestroyImmediate(item); // En mode édition
+				}
 			}
 			spawnedItems.Clear();
 
@@ -282,11 +283,12 @@ namespace RogueQuest.LevelGeneration
 			foreach (GameObject enemy in spawnedEnemies)
 			{
 				if (enemy != null)
-#if !UNITY_EDITOR
-					Destroy(enemy); // En mode jeu
-#else
-					DestroyImmediate(enemy); // En mode édition
-#endif
+				{
+					if (Application.isPlaying)
+						Destroy(enemy); // En mode 
+					else
+						DestroyImmediate(enemy); // En mode édition
+				}
 			}
 			spawnedEnemies.Clear();
 
@@ -300,11 +302,12 @@ namespace RogueQuest.LevelGeneration
 				foreach (GameObject prop in props)
 				{
 					if (prop)
-#if !UNITY_EDITOR
-						Destroy(prop); // En mode jeu
-#else
-						DestroyImmediate(prop); // En mode édition
-#endif
+					{
+						if (Application.isPlaying)
+							Destroy(prop); // En mode jeu
+						else
+							DestroyImmediate(prop); // En mode édition
+					}
 				}
 			}
 		}

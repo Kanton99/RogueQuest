@@ -1,0 +1,598 @@
+fileFormatVersion: 2
+guid: 4bdaa44406f32a849bf615f4a8941b71
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5050248618037078399
+    second: GUTS_DARK_0
+  - first:
+      213: 2648095163791971812
+    second: GUTS_DARK_1
+  - first:
+      213: -2337243458522136950
+    second: GUTS_DARK_2
+  - first:
+      213: -3383216481058723930
+    second: GUTS_DARK_3
+  - first:
+      213: -1612308696443504108
+    second: GUTS_DARK_4
+  - first:
+      213: -749255695635201473
+    second: GUTS_DARK_5
+  - first:
+      213: -9126659888888347504
+    second: GUTS_DARK_6
+  - first:
+      213: -8693721703236896250
+    second: GUTS_DARK_7
+  - first:
+      213: 7091961781812200703
+    second: GUTS_DARK_8
+  - first:
+      213: -1657578061109807729
+    second: GUTS_DARK_9
+  - first:
+      213: -4107133057047489035
+    second: GUTS_DARK_10
+  - first:
+      213: 4175720591383138652
+    second: GUTS_DARK_11
+  - first:
+      213: -4613056553964169468
+    second: GUTS_DARK_12
+  - first:
+      213: -403170825552226346
+    second: GUTS_DARK_13
+  - first:
+      213: -4491632425819779040
+    second: GUTS_DARK_14
+  - first:
+      213: -2586422750758845449
+    second: GUTS_DARK_15
+  - first:
+      213: 2808709080678750493
+    second: GUTS_DARK_16
+  - first:
+      213: -3266395810244709996
+    second: GUTS_DARK_17
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: GUTS_DARK_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 104
+        height: 129
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e63d820fdbaf82e4c97cd012b8846ee5
+      internalID: -1396001380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GUTS_DARK_1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 0
+        width: 104
+        height: 129
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ca3010c8dc021c34b8afa6bdbe4f23b6
+      internalID: 254864597
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GUTS_DARK_2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 0
+        width: 104
+        height: 129
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d453336c54b5ff24197b9c36aae1e6f6
+      internalID: 809490147
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GUTS_DARK_3
+      rect:
+        serializedVersion: 2
+        x: 353
+        y: 0
+        width: 85
+        height: 129
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d7e72507c14405f438821493d16a1105
+      internalID: 2021520647
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GUTS_DARK_4
+      rect:
+        serializedVersion: 2
+        x: 465
+        y: 0
+        width: 85
+        height: 129
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e16c4f275a7e3234099836adfc071ce0
+      internalID: -1521317468
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GUTS_DARK_5
+      rect:
+        serializedVersion: 2
+        x: 577
+        y: 0
+        width: 85
+        height: 129
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 517f67db146628c49b770d433fe4b20a
+      internalID: 1828660582
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GUTS_DARK_6
+      rect:
+        serializedVersion: 2
+        x: 689
+        y: 0
+        width: 85
+        height: 129
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f0d7abfdb301ab844b18de15c79c9475
+      internalID: -1699438400
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GUTS_DARK_7
+      rect:
+        serializedVersion: 2
+        x: 801
+        y: 0
+        width: 85
+        height: 129
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 376b89047d31fe649a0312a97e2a2415
+      internalID: 1052916338
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GUTS_DARK_8
+      rect:
+        serializedVersion: 2
+        x: 924
+        y: 0
+        width: 84
+        height: 129
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aba7135c6373007449e9926d6037b774
+      internalID: 619490406
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GUTS_DARK_9
+      rect:
+        serializedVersion: 2
+        x: 1036
+        y: 0
+        width: 84
+        height: 129
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8cc31f21f289b54189f8862b344d44c
+      internalID: -1120590235
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GUTS_DARK_10
+      rect:
+        serializedVersion: 2
+        x: 1148
+        y: 0
+        width: 84
+        height: 129
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b284662aca7532c44956754a2813b83c
+      internalID: -164800875
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GUTS_DARK_11
+      rect:
+        serializedVersion: 2
+        x: 1260
+        y: 0
+        width: 84
+        height: 129
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 37010e49a0412904eaeaeb0f27ed3b61
+      internalID: -2084129703
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GUTS_DARK_12
+      rect:
+        serializedVersion: 2
+        x: 1372
+        y: 0
+        width: 84
+        height: 129
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cec698a28b8347144b42b5b5e058e3ea
+      internalID: -496441650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GUTS_DARK_13
+      rect:
+        serializedVersion: 2
+        x: 1475
+        y: 0
+        width: 78
+        height: 129
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c297fb32c41d7f84ab00d80179a68b9e
+      internalID: 34814485
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GUTS_DARK_14
+      rect:
+        serializedVersion: 2
+        x: 1587
+        y: 0
+        width: 78
+        height: 129
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd65446426ede2a4bbbd0db6bc772403
+      internalID: 719814306
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GUTS_DARK_15
+      rect:
+        serializedVersion: 2
+        x: 1699
+        y: 0
+        width: 78
+        height: 129
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d81e69fb517ca294f88bc6ceb244e3fc
+      internalID: 428091276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GUTS_DARK_16
+      rect:
+        serializedVersion: 2
+        x: 1811
+        y: 0
+        width: 78
+        height: 129
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 67b6af8264d7e094780b5055e2ff30d0
+      internalID: 959694333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GUTS_DARK_17
+      rect:
+        serializedVersion: 2
+        x: 1904
+        y: 0
+        width: 104
+        height: 129
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba30f47c44c064349b760317baf2161b
+      internalID: 440847605
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: c9162eb5bf4e80a40b9addcf8a6b6108
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      GUTS_DARK_0: -1396001380
+      GUTS_DARK_1: 254864597
+      GUTS_DARK_10: -164800875
+      GUTS_DARK_11: -2084129703
+      GUTS_DARK_12: -496441650
+      GUTS_DARK_13: 34814485
+      GUTS_DARK_14: 719814306
+      GUTS_DARK_15: 428091276
+      GUTS_DARK_16: 959694333
+      GUTS_DARK_17: 440847605
+      GUTS_DARK_2: 809490147
+      GUTS_DARK_3: 2021520647
+      GUTS_DARK_4: -1521317468
+      GUTS_DARK_5: 1828660582
+      GUTS_DARK_6: -1699438400
+      GUTS_DARK_7: 1052916338
+      GUTS_DARK_8: 619490406
+      GUTS_DARK_9: -1120590235
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

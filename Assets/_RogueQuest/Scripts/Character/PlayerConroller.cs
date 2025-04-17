@@ -11,20 +11,25 @@ namespace RogueQuest
         public float dashSpeed = 20f;
         public float dashDuration = 0.2f;
 
+        [Header("Cooldown Settings")]
+        public float jumpCooldown = 1f; // Durée du cooldown pour le saut
+
         private Rigidbody2D rb;
         private Vector2 moveInput;
         private bool isJumping;
         private bool isDashing;
         private float dashTime;
+        private float jumpCooldownTimer; // Timer pour le cooldown du saut
 
         private InputSystem_Actions m_Actions;
         private InputSystem_Actions.PlayerActions m_Player;
+
         private void Awake()
         {
             rb = GetComponent<Rigidbody2D>();
-            m_Actions = new InputSystem_Actions();              // Create asset object.
-            m_Player = m_Actions.Player;                      // Extract action map object.
-            m_Player.AddCallbacks(this);                      // Register callback interface IPlayerActions.
+            m_Actions = new InputSystem_Actions(); // Create asset object.
+            m_Player = m_Actions.Player; // Extract action map object.
+            m_Player.AddCallbacks(this); // Register callback interface IPlayerActions.
         }
 
         void OnDestroy()
@@ -52,6 +57,12 @@ namespace RogueQuest
                     isDashing = false;
                 }
             }
+
+            // Réduire le timer du cooldown du saut
+            if (jumpCooldownTimer > 0)
+            {
+                jumpCooldownTimer -= Time.deltaTime;
+            }
         }
 
         private void FixedUpdate()
@@ -70,6 +81,16 @@ namespace RogueQuest
                     isJumping = false;
                 }
             }
+
+            // Inverser le flip du sprite pour correspondre à la direction du mouvement
+            if (moveInput.x > 0)
+            {
+                transform.localScale = new Vector3(-1, 1, 1); // Inversé pour regarder à droite
+            }
+            else if (moveInput.x < 0)
+            {
+                transform.localScale = new Vector3(1, 1, 1); // Inversé pour regarder à gauche
+            }
         }
 
         public void OnMove(InputAction.CallbackContext context)
@@ -80,9 +101,11 @@ namespace RogueQuest
 
         public void OnJump(InputAction.CallbackContext context)
         {
-            if (context.performed && !isDashing && !isJumping)
+            // Vérifier si le saut est possible (pas de cooldown actif)
+            if (context.performed && !isDashing && !isJumping && jumpCooldownTimer <= 0)
             {
                 isJumping = true;
+                jumpCooldownTimer = jumpCooldown; // Réinitialiser le cooldown
             }
         }
 
@@ -108,9 +131,9 @@ namespace RogueQuest
 
                 foreach (Collider2D enemy in hitEnemies)
                 {
-                    // Vérifier si l'objet touché a un composant EntityStats
+                    // Vérifier si l'objet touché a un composant EntityStats et n'est pas le joueur lui-même
                     EntityStats enemyStats = enemy.GetComponent<EntityStats>();
-                    if (enemyStats != null)
+                    if (enemyStats != null && enemy.gameObject != gameObject)
                     {
                         // Infliger des dégâts à l'ennemi
                         enemyStats.TakeDamage(attackDamage);
