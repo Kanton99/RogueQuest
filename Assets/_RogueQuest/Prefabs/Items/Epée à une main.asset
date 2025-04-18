@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0dcb7478f448d246aba9d593119fb81, type: 3}
   m_Name: "Ep\xE9e \xE0 une main"
   m_EditorClassIdentifier: 
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 95052c6b62fb3de4695beaa99f842ac2, type: 3}
   itemName: 
   description: 
-  damage: 0
-  attackSpeed: 0
-  range: 0
+  damage: 10
+  attackSpeed: 2
+  range: 1

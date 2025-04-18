@@ -15,6 +15,6 @@ MonoBehaviour:
   sprite: {fileID: -1927057034624992917, guid: 8b686578d10392a4094ab8332916892d, type: 3}
   itemName: Test Weapon
   description: 
-  damage: 2
+  damage: 10
   attackSpeed: 2
   range: 2

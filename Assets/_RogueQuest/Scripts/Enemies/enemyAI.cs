@@ -9,7 +9,7 @@ namespace RogueQuest
 
         [Header("Patrol Settings")]
         [SerializeField] private float patrolSpeed = 2.0f;
-        [SerializeField] private float patrolDuration = 2.0f; // Durée avant de changer de direction
+        [SerializeField] private float patrolDuration = 2.0f; // Dur�e avant de changer de direction
         private float patrolTimer = 0f;
 
         [Header("Chase Settings")]
@@ -21,25 +21,25 @@ namespace RogueQuest
         [SerializeField] private LayerMask wallLayerMask; // LayerMask pour les murs
 
         [Header("Player Reference")]
-        [SerializeField] public Transform playerTransform; // Référence au transform du joueur
+        [SerializeField] public Transform playerTransform; // R�f�rence au transform du joueur
 
         [Header("Enemy Type")]
         [SerializeField] private EnemyType enemyType = EnemyType.SmallFry; // Type d'ennemi
 
         private Vector3 currentDirection = Vector3.right; // Direction actuelle de l'ennemi
-        private float groundCheckDistance = 1.0f; // Distance pour vérifier le sol
+        private float groundCheckDistance = 1.0f; // Distance pour v�rifier le sol
 
         private CombatSystem combatSystem;
-        private Animator animator; // Référence à l'Animator
-        private Rigidbody2D rb; // Référence au Rigidbody2D pour calculer la vitesse réelle
+        private Animator animator; // R�f�rence � l'Animator
+        private Rigidbody2D rb; // R�f�rence au Rigidbody2D pour calculer la vitesse r�elle
 
         void Start()
         {
             combatSystem = GetComponent<CombatSystem>();
-            animator = GetComponent<Animator>(); // Récupérer le composant Animator
-            rb = GetComponent<Rigidbody2D>(); // Récupérer le Rigidbody2D
+            animator = GetComponent<Animator>(); // R�cup�rer le composant Animator
+            rb = GetComponent<Rigidbody2D>(); // R�cup�rer le Rigidbody2D
 
-            // Initialiser avec l'état approprié en fonction du type d'ennemi
+            // Initialiser avec l'�tat appropri� en fonction du type d'ennemi
             switch (enemyType)
             {
                 case EnemyType.SmallFry:
@@ -61,75 +61,36 @@ namespace RogueQuest
                 currentState.Execute();
             }
 
-            // Logique de patrouille simple
-            Patrol();
-
-            // Check if the player is within attack range
-            if (Vector2.Distance(transform.position, playerTransform.position) <= attackRange)
+        // Check if the player is within attack range
+        if (playerTransform != null && Vector2.Distance(transform.position, playerTransform.position) <= attackRange)
+        {
+            CombatSystem combatSystem = GetComponent<CombatSystem>();
+            if (combatSystem != null)
             {
                 combatSystem.Attack();
             }
-
-            // Mettre à jour l'animation en fonction de la vitesse réelle
-            float speed = rb.linearVelocity.magnitude; // Calculer la vitesse actuelle
-            animator.SetFloat("Speed", speed);
-
-            // Flip du sprite en fonction de la direction
-            FlipSpriteBasedOnDirection();
         }
+    }
 
-        // Logique de patrouille simple
-        private void Patrol()
-        {
-            patrolTimer += Time.deltaTime;
-
-            // Alterne la direction toutes les X secondes
-            if (patrolTimer >= patrolDuration || DetectWall() || !DetectGround())
-            {
-                patrolTimer = 0f;
-                SetCurrentDirection(-currentDirection); // Inverse la direction
-                Debug.Log("Direction inversée : " + currentDirection); // Débogage
-            }
-
-            // Applique la vitesse de patrouille
-            rb.linearVelocity = new Vector2(currentDirection.x * patrolSpeed, rb.linearVelocity.y);
-            Debug.Log("Vitesse appliquée : " + rb.linearVelocity); // Débogage
-        }
-
-        // Méthode pour gérer le flip du sprite
-        private void FlipSpriteBasedOnDirection()
-        {
-            Debug.Log("Direction pour le flip : " + currentDirection.x); // Débogage
-
-            if (currentDirection.x > 0) // Si l'ennemi se déplace vers la droite
-            {
-                transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z); // Regarder à droite
-            }
-            else if (currentDirection.x < 0) // Si l'ennemi se déplace vers la gauche
-            {
-                transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z); // Regarder à gauche
-            }
-        }
-
-        // Détecte si un mur est devant l'ennemi
+        // D�tecte si un mur est devant l'ennemi
         private bool DetectWall()
         {
-            Vector2 origin = transform.position + currentDirection * 0.5f; // Point de départ du raycast
+            Vector2 origin = transform.position + currentDirection * 0.5f; // Point de d�part du raycast
             RaycastHit2D hit = Physics2D.Raycast(origin, currentDirection, 0.5f, wallLayerMask);
-            Debug.Log("Mur détecté : " + (hit.collider != null)); // Débogage
-            return hit.collider != null; // Retourne true si un mur est détecté
+            Debug.Log("Mur d�tect� : " + (hit.collider != null)); // D�bogage
+            return hit.collider != null; // Retourne true si un mur est d�tect�
         }
 
-        // Détecte si le sol est devant l'ennemi
+        // D�tecte si le sol est devant l'ennemi
         private bool DetectGround()
         {
-            Vector2 origin = transform.position + currentDirection * 0.5f; // Point de départ du raycast
+            Vector2 origin = transform.position + currentDirection * 0.5f; // Point de d�part du raycast
             RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, groundCheckDistance, wallLayerMask);
-            Debug.Log("Sol détecté : " + (hit.collider != null)); // Débogage
-            return hit.collider != null; // Retourne true si le sol est détecté
+            Debug.Log("Sol d�tect� : " + (hit.collider != null)); // D�bogage
+            return hit.collider != null; // Retourne true si le sol est d�tect�
         }
 
-        // Changer l'état actuel de l'ennemi
+        // Changer l'�tat actuel de l'ennemi
         public void ChangeState(EnemyState newState)
         {
             if (currentState != null)
@@ -153,7 +114,7 @@ namespace RogueQuest
         public float GroundCheckDistance => groundCheckDistance; // Getter pour groundCheckDistance
         public LayerMask WallLayerMask => wallLayerMask; // Getter pour wallLayerMask
 
-        // Définir la direction actuelle de l'ennemi
+        // D�finir la direction actuelle de l'ennemi
         public void SetCurrentDirection(Vector3 direction)
         {
             currentDirection = direction;
@@ -163,12 +124,12 @@ namespace RogueQuest
         {
             Gizmos.color = Color.cyan;
 
-            Vector2 origin = transform.position + currentDirection * 0.5f; // Vérifier légèrement devant l'ennemi
+            Vector2 origin = transform.position + currentDirection * 0.5f; // V�rifier l�g�rement devant l'ennemi
             Gizmos.DrawLine(origin, origin + Vector2.down * groundCheckDistance);
 
             Gizmos.color = Color.red;
 
-            Debug.DrawRay((Vector3.down * 0.35f) + transform.position, currentDirection * DetectionRange, Color.red); // Ajout d'un raycast visible pour le débogage
+            Debug.DrawRay((Vector3.down * 0.35f) + transform.position, currentDirection * DetectionRange, Color.red); // Ajout d'un raycast visible pour le d�bogage
         }
     }
 
