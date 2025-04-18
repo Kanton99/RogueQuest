@@ -262,49 +262,50 @@ namespace RogueQuest.LevelGeneration
 						Destroy(room); // En mode jeu
 					else
 						DestroyImmediate(room); // En mode édition
-			spawnedRooms.Clear();
+				spawnedRooms.Clear();
 
-			// Détruire tous les items générés
-			foreach (GameObject item in spawnedItems)
-			{
-				if (item != null)
+				// Détruire tous les items générés
+				foreach (GameObject item in spawnedItems)
 				{
-					if (!Application.isPlaying)
-						Destroy(item); // En mode jeu
-					else
-						DestroyImmediate(item); // En mode édition
+					if (item != null)
+					{
+						if (!Application.isPlaying)
+							Destroy(item); // En mode jeu
+						else
+							DestroyImmediate(item); // En mode édition
+					}
 				}
-			}
-			spawnedItems.Clear();
+				spawnedItems.Clear();
 
-			// Détruire tous les ennemis générés
-			foreach (GameObject enemy in spawnedEnemies)
-			{
-				if (enemy != null)
+				// Détruire tous les ennemis générés
+				foreach (GameObject enemy in spawnedEnemies)
 				{
-					if (Application.isPlaying)
-						Destroy(enemy); // En mode 
-					else
-						DestroyImmediate(enemy); // En mode édition
-				}
-			}
-			spawnedEnemies.Clear();
-
-			// Nettoyer la tilemap
-			if (ground)
-				ground.ClearAllTiles();
-			if (background)
-				background.ClearAllTiles();
-			if (props.Count > 0)
-			{
-				foreach (GameObject prop in props)
-				{
-					if (prop)
+					if (enemy != null)
 					{
 						if (Application.isPlaying)
-							Destroy(prop); // En mode jeu
+							Destroy(enemy); // En mode 
 						else
-							DestroyImmediate(prop); // En mode édition
+							DestroyImmediate(enemy); // En mode édition
+					}
+				}
+				spawnedEnemies.Clear();
+
+				// Nettoyer la tilemap
+				if (ground)
+					ground.ClearAllTiles();
+				if (background)
+					background.ClearAllTiles();
+				if (props.Count > 0)
+				{
+					foreach (GameObject prop in props)
+					{
+						if (prop)
+						{
+							if (Application.isPlaying)
+								Destroy(prop); // En mode jeu
+							else
+								DestroyImmediate(prop); // En mode édition
+						}
 					}
 				}
 			}

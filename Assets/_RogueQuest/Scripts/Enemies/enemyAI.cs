@@ -55,12 +55,16 @@ namespace RogueQuest
                 currentState.Execute();
             }
 
-            // Check if the player is within attack range
-            if (Vector2.Distance(transform.position, playerTransform.position) <= attackRange)
+        // Check if the player is within attack range
+        if (playerTransform != null && Vector2.Distance(transform.position, playerTransform.position) <= attackRange)
+        {
+            CombatSystem combatSystem = GetComponent<CombatSystem>();
+            if (combatSystem != null)
             {
                 combatSystem.Attack();
             }
         }
+    }
 
         // Changer l'état actuel de l'ennemi
         public void ChangeState(EnemyState newState)

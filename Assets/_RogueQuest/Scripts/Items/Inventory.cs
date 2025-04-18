@@ -19,11 +19,22 @@ namespace RogueQuest.Items
 
         private HUDManager hudManager;
 
-        private void Start()
+    private void Start()
+    {
+        // Initialize consumables array
+        consumables = new Consumable[maxConsumables];
+        hudManager = FindObjectOfType<HUDManager>();
+
+        // Equip a default weapon if none is assigned
+        if (weapon == null)
         {
-            consumables = new Consumable[maxConsumables]; // Example size, adjust as needed
-            hudManager = FindFirstObjectByType<HUDManager>();
+            Weapon defaultWeapon = ScriptableObject.CreateInstance<Weapon>();
+            defaultWeapon.itemName = "Enemy Sword";
+            defaultWeapon.damage = 10;
+            defaultWeapon.range = 1.5f;
+            AddItem(defaultWeapon);
         }
+    }
 
         public void AddItem(Item item)
         {
@@ -69,21 +80,25 @@ namespace RogueQuest.Items
             lastConsumableSlotUsed = (lastConsumableSlotUsed + 1) % maxConsumables;
         }
 
-        private void SwitchWeapon(Weapon weapon)
+    private void SwitchWeapon(Weapon weapon)
+    {
+        if (this.weapon != null)
         {
             DropItem(this.weapon);
-            this.weapon = weapon;
         }
 
-        private void DropItem(Item item)
+        this.weapon = weapon;
+        Debug.Log($"Equipped weapon: {weapon.itemName}");
+    }
+
+    private void DropItem(Item item)
+    {
+        if (dropItemPrefab != null && item != null)
         {
-            if (dropItemPrefab != null && this.weapon != null)
-            {
-                GameObject dropItem = Instantiate(dropItemPrefab, transform.position, Quaternion.identity);
-                //dropItem.GetComponents<SpriteRenderer>()[0].sprite = this.weapon.sprite;
-                dropItem.GetComponent<DroppedItem>().item = this.weapon;
-            }
+            GameObject dropItem = Instantiate(dropItemPrefab, transform.position, Quaternion.identity);
+            dropItem.GetComponent<DroppedItem>().item = item;
         }
+    }
 
         public void PickUpItem()
         {
