@@ -630,7 +630,7 @@ namespace CharacterCreator2D
             {
                 CharacterData data = GenerateCharacterData();
                 string content = JsonUtility.ToJson(data, true);
-                string directory = System.IO.Path.GetDirectoryName(filePath);
+                string directory = Path.GetDirectoryName(filePath);
                 if (string.IsNullOrEmpty(directory))
                 {
                     directory = Directory.GetCurrentDirectory();

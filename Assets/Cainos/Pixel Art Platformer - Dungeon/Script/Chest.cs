@@ -16,6 +16,10 @@ namespace Cainos.PixelArtPlatformer_Dungeon
         [FoldoutGroup("Reference")] public Sprite spriteOpened;
         [FoldoutGroup("Reference")] public Sprite spriteClosed;
 
+        [FoldoutGroup("Audio")] public AudioClip openSound; // Son d'ouverture
+        [FoldoutGroup("Audio")] public AudioClip closeSound; // Son de fermeture
+        private AudioSource audioSource; // Référence à l'AudioSource
+
         [FoldoutGroup("Runtime"), ShowInInspector]
         public bool IsOpened
         {
@@ -24,17 +28,30 @@ namespace Cainos.PixelArtPlatformer_Dungeon
             {
                 isOpened = value;
 
-                 #if UNITY_EDITOR
+#if UNITY_EDITOR
                 if (Application.isPlaying == false)
                 {
                     EditorUtility.SetDirty(this);
                     EditorSceneManager.MarkSceneDirty(gameObject.scene);
                 }
-                #endif
+#endif
 
                 if (Application.isPlaying)
                 {
                     Animator.SetBool("IsOpened", isOpened);
+
+                    // Jouer le son d'ouverture ou de fermeture
+                    if (audioSource != null)
+                    {
+                        if (isOpened && openSound != null)
+                        {
+                            audioSource.PlayOneShot(openSound); // Joue le son d'ouverture
+                        }
+                        else if (!isOpened && closeSound != null)
+                        {
+                            audioSource.PlayOneShot(closeSound); // Joue le son de fermeture
+                        }
+                    }
                 }
                 else
                 {
@@ -42,6 +59,7 @@ namespace Cainos.PixelArtPlatformer_Dungeon
                 }
             }
         }
+
         [SerializeField, HideInInspector]
         private bool isOpened;
 
@@ -57,6 +75,9 @@ namespace Cainos.PixelArtPlatformer_Dungeon
 
         private void Start()
         {
+            animator = GetComponent<Animator>();
+            audioSource = GetComponent<AudioSource>(); // Récupère l'AudioSource attachée au coffre
+
             Animator.Play(isOpened ? "Opened" : "Closed");
             IsOpened = isOpened;
         }

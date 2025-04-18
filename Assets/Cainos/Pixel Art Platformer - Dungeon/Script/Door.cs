@@ -14,18 +14,41 @@ namespace Cainos.PixelArtPlatformer_Dungeon
         [FoldoutGroup("Reference")] public SpriteRenderer spriteRenderer;
         [FoldoutGroup("Reference")] public Sprite spriteOpened;
         [FoldoutGroup("Reference")] public Sprite spriteClosed;
+        [FoldoutGroup("Reference")] public BoxCollider2D frameCollider; // Référence au BoxCollider2D du GameObject Frame
 
+        [FoldoutGroup("Audio")] public AudioClip openSound; // Son d'ouverture
+        [FoldoutGroup("Audio")] public AudioClip closeSound; // Son de fermeture
+
+        private AudioSource audioSource; // Référence à l'AudioSource
+        private Animator animator;
+        private bool isOpened = false; // État actuel de la porte
 
         private Animator Animator
         {
             get
             {
-                if (animator == null ) animator = GetComponent<Animator>();
+                if (animator == null) animator = GetComponent<Animator>();
                 return animator;
             }
         }
-        private Animator animator;
 
+        void Start()
+        {
+            animator = GetComponent<Animator>(); // Récupérer l'Animator attaché à la porte
+            audioSource = GetComponent<AudioSource>(); // Récupérer l'AudioSource attaché à la porte
+            Animator.Play(isOpened ? "Opened" : "Closed");
+            IsOpened = isOpened;
+
+            if (frameCollider == null)
+            {
+                // Récupérer automatiquement le BoxCollider2D du GameObject enfant "Frame" s'il n'est pas assigné
+                Transform frameTransform = transform.Find("Frame");
+                if (frameTransform != null)
+                {
+                    frameCollider = frameTransform.GetComponent<BoxCollider2D>();
+                }
+            }
+        }
 
         [FoldoutGroup("Runtime"), ShowInInspector]
         public bool IsOpened
@@ -43,10 +66,20 @@ namespace Cainos.PixelArtPlatformer_Dungeon
                 }
                 #endif
 
-
                 if (Application.isPlaying)
                 {
                     Animator.SetBool("IsOpened", isOpened);
+                    if (frameCollider != null) frameCollider.enabled = !isOpened; // Activer/désactiver le BoxCollider2D du cadre
+
+                    // Jouer le son approprié
+                    if (audioSource != null)
+                    {
+                        AudioClip soundToPlay = isOpened ? openSound : closeSound;
+                        if (soundToPlay != null)
+                        {
+                            audioSource.PlayOneShot(soundToPlay);
+                        }
+                    }
                 }
                 else
                 {
@@ -54,26 +87,38 @@ namespace Cainos.PixelArtPlatformer_Dungeon
                 }
             }
         }
-        [SerializeField,HideInInspector]
-        private bool isOpened;
-
-        private void Start()
-        {
-            Animator.Play(isOpened ? "Opened" : "Closed");
-            IsOpened = isOpened;
-        }
-
 
         [FoldoutGroup("Runtime"), HorizontalGroup("Runtime/Button"), Button("Open")]
         public void Open()
         {
-            IsOpened = true;
+            if (!isOpened) // Si la porte n'est pas déjà ouverte
+            {
+                IsOpened = true;
+                Debug.Log("Porte ouverte."); // Débogage
+            }
         }
 
         [FoldoutGroup("Runtime"), HorizontalGroup("Runtime/Button"), Button("Close")]
         public void Close()
         {
-            IsOpened = false;
+            if (isOpened) // Si la porte est ouverte
+            {
+                IsOpened = false;
+                Debug.Log("Porte fermée."); // Débogage
+            }
+        }
+
+        [FoldoutGroup("Runtime"), HorizontalGroup("Runtime/Button"), Button("Toggle")]
+        public void Toggle()
+        {
+            if (isOpened)
+            {
+                Close(); // Fermer la porte si elle est ouverte
+            }
+            else
+            {
+                Open(); // Ouvrir la porte si elle est fermée
+            }
         }
     }
 }

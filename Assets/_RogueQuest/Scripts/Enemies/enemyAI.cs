@@ -9,6 +9,8 @@ namespace RogueQuest
 
         [Header("Patrol Settings")]
         [SerializeField] private float patrolSpeed = 2.0f;
+        [SerializeField] private float patrolDuration = 2.0f; // Durï¿½e avant de changer de direction
+        private float patrolTimer = 0f;
 
         [Header("Chase Settings")]
         [SerializeField] private float chaseSpeed = 4.0f;
@@ -19,21 +21,25 @@ namespace RogueQuest
         [SerializeField] private LayerMask wallLayerMask; // LayerMask pour les murs
 
         [Header("Player Reference")]
-        [SerializeField] public Transform playerTransform; // Référence au transform du joueur
+        [SerializeField] public Transform playerTransform; // Rï¿½fï¿½rence au transform du joueur
 
         [Header("Enemy Type")]
         [SerializeField] private EnemyType enemyType = EnemyType.SmallFry; // Type d'ennemi
 
-        private Vector3 currentDirection = Vector3.right; // Passé en private
-        private float groundCheckDistance = 1.0f; // Passé en private
+        private Vector3 currentDirection = Vector3.right; // Direction actuelle de l'ennemi
+        private float groundCheckDistance = 1.0f; // Distance pour vï¿½rifier le sol
 
         private CombatSystem combatSystem;
+        private Animator animator; // Rï¿½fï¿½rence ï¿½ l'Animator
+        private Rigidbody2D rb; // Rï¿½fï¿½rence au Rigidbody2D pour calculer la vitesse rï¿½elle
 
         void Start()
         {
             combatSystem = GetComponent<CombatSystem>();
+            animator = GetComponent<Animator>(); // Rï¿½cupï¿½rer le composant Animator
+            rb = GetComponent<Rigidbody2D>(); // Rï¿½cupï¿½rer le Rigidbody2D
 
-            // Initialiser avec l'état approprié en fonction du type d'ennemi
+            // Initialiser avec l'ï¿½tat appropriï¿½ en fonction du type d'ennemi
             switch (enemyType)
             {
                 case EnemyType.SmallFry:
@@ -66,7 +72,25 @@ namespace RogueQuest
         }
     }
 
-        // Changer l'état actuel de l'ennemi
+        // Dï¿½tecte si un mur est devant l'ennemi
+        private bool DetectWall()
+        {
+            Vector2 origin = transform.position + currentDirection * 0.5f; // Point de dï¿½part du raycast
+            RaycastHit2D hit = Physics2D.Raycast(origin, currentDirection, 0.5f, wallLayerMask);
+            Debug.Log("Mur dï¿½tectï¿½ : " + (hit.collider != null)); // Dï¿½bogage
+            return hit.collider != null; // Retourne true si un mur est dï¿½tectï¿½
+        }
+
+        // Dï¿½tecte si le sol est devant l'ennemi
+        private bool DetectGround()
+        {
+            Vector2 origin = transform.position + currentDirection * 0.5f; // Point de dï¿½part du raycast
+            RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, groundCheckDistance, wallLayerMask);
+            Debug.Log("Sol dï¿½tectï¿½ : " + (hit.collider != null)); // Dï¿½bogage
+            return hit.collider != null; // Retourne true si le sol est dï¿½tectï¿½
+        }
+
+        // Changer l'ï¿½tat actuel de l'ennemi
         public void ChangeState(EnemyState newState)
         {
             if (currentState != null)
@@ -86,11 +110,11 @@ namespace RogueQuest
         public float ChaseSpeed => chaseSpeed;
         public float DetectionRange => detectionRange;
         public float AttackRange => attackRange;
-        public Vector3 CurrentDirection => currentDirection; // Ajouté un getter pour currentDirection
-        public float GroundCheckDistance => groundCheckDistance; // Ajouté un getter pour groundCheckDistance
-        public LayerMask WallLayerMask => wallLayerMask; // Ajouté un getter pour wallLayerMask
+        public Vector3 CurrentDirection => currentDirection; // Getter pour currentDirection
+        public float GroundCheckDistance => groundCheckDistance; // Getter pour groundCheckDistance
+        public LayerMask WallLayerMask => wallLayerMask; // Getter pour wallLayerMask
 
-        // Définir la direction actuelle de l'ennemi
+        // Dï¿½finir la direction actuelle de l'ennemi
         public void SetCurrentDirection(Vector3 direction)
         {
             currentDirection = direction;
@@ -100,14 +124,15 @@ namespace RogueQuest
         {
             Gizmos.color = Color.cyan;
 
-            Vector2 origin = transform.position + currentDirection * 0.5f; // Vérifier légèrement devant l'ennemi
+            Vector2 origin = transform.position + currentDirection * 0.5f; // Vï¿½rifier lï¿½gï¿½rement devant l'ennemi
             Gizmos.DrawLine(origin, origin + Vector2.down * groundCheckDistance);
 
             Gizmos.color = Color.red;
 
-            Debug.DrawRay((Vector3.down * 0.35f) + transform.position, currentDirection * DetectionRange, Color.red); // Ajout d'un raycast visible pour le débogage
+            Debug.DrawRay((Vector3.down * 0.35f) + transform.position, currentDirection * DetectionRange, Color.red); // Ajout d'un raycast visible pour le dï¿½bogage
         }
     }
+
     public enum EnemyType
     {
         SmallFry,
