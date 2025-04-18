@@ -48,10 +48,10 @@ public class BASICAI : MonoBehaviour
         }
 
         // Applique la vitesse de déplacement
-        rb.velocity = new Vector2(direction.x * speed, rb.velocity.y);
+        rb.linearVelocity = new Vector2(direction.x * speed, rb.linearVelocity.y);
 
         // Met à jour l'animation de course
-        animator.SetFloat("Speed", Mathf.Abs(rb.velocity.x));
+        animator.SetFloat("Speed", Mathf.Abs(rb.linearVelocity.x));
     }
 
     private bool DetectGround()

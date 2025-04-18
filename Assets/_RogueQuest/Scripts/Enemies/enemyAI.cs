@@ -71,7 +71,7 @@ namespace RogueQuest
             }
 
             // Mettre à jour l'animation en fonction de la vitesse réelle
-            float speed = rb.velocity.magnitude; // Calculer la vitesse actuelle
+            float speed = rb.linearVelocity.magnitude; // Calculer la vitesse actuelle
             animator.SetFloat("Speed", speed);
 
             // Flip du sprite en fonction de la direction
@@ -92,8 +92,8 @@ namespace RogueQuest
             }
 
             // Applique la vitesse de patrouille
-            rb.velocity = new Vector2(currentDirection.x * patrolSpeed, rb.velocity.y);
-            Debug.Log("Vitesse appliquée : " + rb.velocity); // Débogage
+            rb.linearVelocity = new Vector2(currentDirection.x * patrolSpeed, rb.linearVelocity.y);
+            Debug.Log("Vitesse appliquée : " + rb.linearVelocity); // Débogage
         }
 
         // Méthode pour gérer le flip du sprite

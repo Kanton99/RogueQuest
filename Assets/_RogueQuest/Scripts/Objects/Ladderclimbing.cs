@@ -42,7 +42,7 @@ public class Ladderclimbing : MonoBehaviour
         {
             // Déplace le personnage verticalement sur l'échelle
             float verticalInput = Input.GetAxisRaw("Vertical");
-            rb.velocity = new Vector2(rb.velocity.x, verticalInput * climbSpeed);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, verticalInput * climbSpeed);
             rb.gravityScale = 0; // Désactive la gravité pendant l'escalade
         }
         else

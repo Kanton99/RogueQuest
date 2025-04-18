@@ -75,11 +75,11 @@ namespace RogueQuest
             animator.SetFloat("Speed", Mathf.Abs(moveInput.x));
 
             // Vérifie si le joueur est en l'air et met à jour l'animation de chute
-            bool isFalling = !IsGrounded() && rb.velocity.y < 0;
+            bool isFalling = !IsGrounded() && rb.linearVelocity.y < 0;
             animator.SetBool("IsFalling", isFalling);
 
             // Vérifie si le joueur est en train de sauter
-            bool isJumpingNow = !IsGrounded() && rb.velocity.y > 0;
+            bool isJumpingNow = !IsGrounded() && rb.linearVelocity.y > 0;
             animator.SetBool("IsJumping", isJumpingNow);
         }
 
@@ -87,11 +87,11 @@ namespace RogueQuest
         {
             if (isDashing)
             {
-                rb.velocity = new Vector2(moveInput.x * dashSpeed, rb.velocity.y);
+                rb.linearVelocity = new Vector2(moveInput.x * dashSpeed, rb.linearVelocity.y);
             }
             else
             {
-                rb.velocity = new Vector2(moveInput.x * moveSpeed, rb.velocity.y);
+                rb.linearVelocity = new Vector2(moveInput.x * moveSpeed, rb.linearVelocity.y);
 
                 if (isJumping)
                 {
