@@ -43,10 +43,10 @@ namespace RogueQuest.LevelGeneration
 		[ContextMenu("Generate fully")]
 		public void GenerateLevelSteps()
 		{
-			// Nettoyer les objets générés précédemment
+			// Nettoyer les objets gï¿½nï¿½rï¿½s prï¿½cï¿½demment
 			CleanUp();
 
-			// Générer le niveau
+			// Gï¿½nï¿½rer le niveau
 			Path[] paths = GenerateInitialLayout();
 			SetupRoomMap(paths);
 			PlaceRooms();
@@ -254,17 +254,17 @@ namespace RogueQuest.LevelGeneration
 		}
 		private void CleanUp()
 		{
-			// Détruire toutes les salles générées
+			// Dï¿½truire toutes les salles gï¿½nï¿½rï¿½es
 			foreach (GameObject room in spawnedRooms)
 			{
 				if (room != null)
 					if (Application.isPlaying)
 						Destroy(room); // En mode jeu
 					else
-						DestroyImmediate(room); // En mode édition
+						DestroyImmediate(room); // En mode ï¿½dition
 			spawnedRooms.Clear();
 
-			// Détruire tous les items générés
+			// Dï¿½truire tous les items gï¿½nï¿½rï¿½s
 			foreach (GameObject item in spawnedItems)
 			{
 				if (item != null)
@@ -272,12 +272,12 @@ namespace RogueQuest.LevelGeneration
 					if (!Application.isPlaying)
 						Destroy(item); // En mode jeu
 					else
-						DestroyImmediate(item); // En mode édition
+						DestroyImmediate(item); // En mode ï¿½dition
 				}
 			}
 			spawnedItems.Clear();
 
-			// Détruire tous les ennemis générés
+			// Dï¿½truire tous les ennemis gï¿½nï¿½rï¿½s
 			foreach (GameObject enemy in spawnedEnemies)
 			{
 				if (enemy != null)
@@ -285,7 +285,7 @@ namespace RogueQuest.LevelGeneration
 					if (Application.isPlaying)
 						Destroy(enemy); // En mode 
 					else
-						DestroyImmediate(enemy); // En mode édition
+						DestroyImmediate(enemy); // En mode ï¿½dition
 				}
 			}
 			spawnedEnemies.Clear();
@@ -304,11 +304,11 @@ namespace RogueQuest.LevelGeneration
 						if (Application.isPlaying)
 							Destroy(prop); // En mode jeu
 						else
-							DestroyImmediate(prop); // En mode édition
+							DestroyImmediate(prop); // En mode ï¿½dition
 					}
 				}
 			}
-		}
+		}}
 		public void AddSpawnedItem(GameObject item)
 		{
 			spawnedItems.Add(item);

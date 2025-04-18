@@ -8,6 +8,7 @@ TagManager:
   - Obstacle
   - platform
   - enemys
+  - Ladder
   layers:
   - Default
   - TransparentFX

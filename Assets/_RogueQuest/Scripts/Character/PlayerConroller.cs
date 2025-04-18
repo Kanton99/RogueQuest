@@ -6,13 +6,17 @@ namespace RogueQuest
     public class PlayerController : MonoBehaviour, InputSystem_Actions.IPlayerActions
     {
         [Header("Movement Settings")]
-        public float moveSpeed = 5f;
-        public float jumpForce = 10f;
-        public float dashSpeed = 20f;
+        public float moveSpeed = 1f;
+        public float jumpForce = 5f;
+        public float dashSpeed = 3f;
         public float dashDuration = 0.2f;
 
         [Header("Cooldown Settings")]
-        public float jumpCooldown = 1f; // DurÈe du cooldown pour le saut
+        public float jumpCooldown = 1f; // Dur√©e du cooldown pour le saut
+
+        [Header("Ground Check Settings")]
+        public LayerMask groundLayer; // Layer du sol pour d√©tecter si le joueur est au sol
+        public float groundCheckDistance = 0.1f; // Distance pour v√©rifier le sol
 
         private Rigidbody2D rb;
         private Vector2 moveInput;
@@ -24,9 +28,12 @@ namespace RogueQuest
         private InputSystem_Actions m_Actions;
         private InputSystem_Actions.PlayerActions m_Player;
 
+        private Animator animator; // R√©f√©rence √† l'Animator
+
         private void Awake()
         {
             rb = GetComponent<Rigidbody2D>();
+            animator = GetComponent<Animator>(); // R√©cup√©rer le composant Animator
             m_Actions = new InputSystem_Actions(); // Create asset object.
             m_Player = m_Actions.Player; // Extract action map object.
             m_Player.AddCallbacks(this); // Register callback interface IPlayerActions.
@@ -58,22 +65,33 @@ namespace RogueQuest
                 }
             }
 
-            // RÈduire le timer du cooldown du saut
+            // R√©duire le timer du cooldown du saut
             if (jumpCooldownTimer > 0)
             {
                 jumpCooldownTimer -= Time.deltaTime;
             }
+
+            // Mettre √† jour l'animation en fonction de la vitesse
+            animator.SetFloat("Speed", Mathf.Abs(moveInput.x));
+
+            // V√©rifie si le joueur est en l'air et met √† jour l'animation de chute
+            bool isFalling = !IsGrounded() && rb.velocity.y < 0;
+            animator.SetBool("IsFalling", isFalling);
+
+            // V√©rifie si le joueur est en train de sauter
+            bool isJumpingNow = !IsGrounded() && rb.velocity.y > 0;
+            animator.SetBool("IsJumping", isJumpingNow);
         }
 
         private void FixedUpdate()
         {
             if (isDashing)
             {
-                rb.linearVelocity = new Vector2(moveInput.x * dashSpeed, rb.linearVelocity.y);
+                rb.velocity = new Vector2(moveInput.x * dashSpeed, rb.velocity.y);
             }
             else
             {
-                rb.linearVelocity = new Vector2(moveInput.x * moveSpeed, rb.linearVelocity.y);
+                rb.velocity = new Vector2(moveInput.x * moveSpeed, rb.velocity.y);
 
                 if (isJumping)
                 {
@@ -82,15 +100,28 @@ namespace RogueQuest
                 }
             }
 
-            // Inverser le flip du sprite pour correspondre ‡ la direction du mouvement
+            // R√©initialise l'animation de saut lorsque le joueur touche le sol
+            if (IsGrounded())
+            {
+                animator.SetBool("IsJumping", false);
+            }
+
+            // Inverser le flip du sprite pour correspondre √† la direction du mouvement
             if (moveInput.x > 0)
             {
-                transform.localScale = new Vector3(-1, 1, 1); // InversÈ pour regarder ‡ droite
+                transform.localScale = new Vector3(0.13f, transform.localScale.y, transform.localScale.z); // Regarder √† droite
             }
             else if (moveInput.x < 0)
             {
-                transform.localScale = new Vector3(1, 1, 1); // InversÈ pour regarder ‡ gauche
+                transform.localScale = new Vector3(-0.13f, transform.localScale.y, transform.localScale.z); // Regarder √† gauche
             }
+        }
+
+        private bool IsGrounded()
+        {
+            // V√©rifie si le joueur touche le sol
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, groundLayer);
+            return hit.collider != null;
         }
 
         public void OnMove(InputAction.CallbackContext context)
@@ -101,11 +132,12 @@ namespace RogueQuest
 
         public void OnJump(InputAction.CallbackContext context)
         {
-            // VÈrifier si le saut est possible (pas de cooldown actif)
+            // V√©rifier si le saut est possible (pas de cooldown actif)
             if (context.performed && !isDashing && !isJumping && jumpCooldownTimer <= 0)
             {
                 isJumping = true;
-                jumpCooldownTimer = jumpCooldown; // RÈinitialiser le cooldown
+                animator.SetBool("IsJumping", true); // Active l'animation de saut
+                jumpCooldownTimer = jumpCooldown; // R√©initialiser le cooldown
             }
         }
 
@@ -122,27 +154,27 @@ namespace RogueQuest
         {
             if (context.performed)
             {
-                // DÈfinir une portÈe d'attaque
+                // D√©finir une port√©e d'attaque
                 float attackRange = 1.5f;
                 int attackDamage = 10;
 
-                // Trouver les ennemis dans la portÈe
+                // Trouver les ennemis dans la port√©e
                 Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(transform.position, attackRange);
 
                 foreach (Collider2D enemy in hitEnemies)
                 {
-                    // VÈrifier si l'objet touchÈ a un composant EntityStats et n'est pas le joueur lui-mÍme
+                    // V√©rifier si l'objet touch√© a un composant EntityStats et n'est pas le joueur lui-m√™me
                     EntityStats enemyStats = enemy.GetComponent<EntityStats>();
                     if (enemyStats != null && enemy.gameObject != gameObject)
                     {
-                        // Infliger des dÈg‚ts ‡ l'ennemi
+                        // Infliger des d√©g√¢ts √† l'ennemi
                         enemyStats.TakeDamage(attackDamage);
-                        Debug.Log($"Ennemi touchÈ ! Vie restante : {enemyStats.currentHealth}");
+                        Debug.Log($"Ennemi touch√© ! Vie restante : {enemyStats.currentHealth}");
                     }
                 }
 
                 // Ajouter des effets visuels ou sonores ici
-                Debug.Log("Attaque effectuÈe !");
+                Debug.Log("Attaque effectu√©e !");
             }
         }
 
@@ -176,13 +208,13 @@ namespace RogueQuest
         {
             if (context.performed)
             {
-                // Augmenter la vitesse de dÈplacement pour le sprint
+                // Augmenter la vitesse de d√©placement pour le sprint
                 moveSpeed *= 1.5f; // Par exemple, augmenter de 50%
             }
             else if (context.canceled)
             {
-                // RÈinitialiser la vitesse de dÈplacement
-                moveSpeed /= 1.5f; // Revenir ‡ la vitesse normale
+                // R√©initialiser la vitesse de d√©placement
+                moveSpeed /= 1.5f; // Revenir √† la vitesse normale
             }
         }
     }
