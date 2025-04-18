@@ -1,37 +1,40 @@
 using UnityEngine;
 
 // État d'attaque
-public class AttackState : EnemyState
+namespace RogueQuest
 {
-    public AttackState(EnemyAI enemyAI) : base(enemyAI) { }
-
-    // Méthode appelée lors de l'entrée dans l'état d'attaque
-    public override void Enter()
+    public class AttackState : EnemyState
     {
-        Debug.Log("Entering Attack State");
-    }
+        public AttackState(EnemyAI enemyAI) : base(enemyAI) { }
 
-    // Méthode appelée à chaque frame pour exécuter la logique d'attaque
-    public override void Execute()
-    {
-        if (enemyAI == null) return;
+        // Méthode appelée lors de l'entrée dans l'état d'attaque
+        public override void Enter()
+        {
+            Debug.Log("Entering Attack State");
+        }
 
-        // Logique d'attaque
-        Debug.Log("Attacking...");
+        // Méthode appelée à chaque frame pour exécuter la logique d'attaque
+        public override void Execute()
+        {
+            if (enemyAI == null) return;
 
-        // Attaquer le joueur
-        AttackPlayer();
-    }
+            // Logique d'attaque
+            Debug.Log("Attacking...");
 
-    // Méthode appelée lors de la sortie de l'état d'attaque
-    public override void Exit()
-    {
-        Debug.Log("Exiting Attack State");
-    }
+            // Attaquer le joueur
+            AttackPlayer();
+        }
 
-    // Logique pour infliger des dégâts au joueur
-    private void AttackPlayer()
-    {
-        Debug.Log("Player attacked!");
+        // Méthode appelée lors de la sortie de l'état d'attaque
+        public override void Exit()
+        {
+            Debug.Log("Exiting Attack State");
+        }
+
+        // Logique pour infliger des dégâts au joueur
+        private void AttackPlayer()
+        {
+            Debug.Log("Player attacked!");
+        }
     }
 }

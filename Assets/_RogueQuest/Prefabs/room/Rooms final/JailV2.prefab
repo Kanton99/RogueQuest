@@ -14,15 +14,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1945368533854362868, guid: e6af6d54ba6880f48938c08f435ba586, type: 3}
       propertyPath: m_Name
-      value: Jail Variant
+      value: JailV2
       objectReference: {fileID: 0}
     - target: {fileID: 4483242695592978722, guid: e6af6d54ba6880f48938c08f435ba586, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.1800327
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4483242695592978722, guid: e6af6d54ba6880f48938c08f435ba586, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.980678
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4483242695592978722, guid: e6af6d54ba6880f48938c08f435ba586, type: 3}
       propertyPath: m_LocalPosition.z

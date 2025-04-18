@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77378c14ca6ecdb48b441362c1401438, type: 3}
+  m_Name: Ending Room
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 5564528379536993805, guid: 585d00c333f2b2f4fbb4237fd457b78e, type: 3}
+  size: {x: 32, y: 16}
+  directions: 02000000
+  weight: 0

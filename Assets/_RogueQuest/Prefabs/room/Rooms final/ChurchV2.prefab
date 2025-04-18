@@ -10,15 +10,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2280929992290951638, guid: 94f615ce5104dd84ea1d6fac29c97e6f, type: 3}
       propertyPath: m_Name
-      value: Church Variant
+      value: ChurchV2
       objectReference: {fileID: 0}
     - target: {fileID: 4282789773702779904, guid: 94f615ce5104dd84ea1d6fac29c97e6f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.1800327
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4282789773702779904, guid: 94f615ce5104dd84ea1d6fac29c97e6f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.980678
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4282789773702779904, guid: 94f615ce5104dd84ea1d6fac29c97e6f, type: 3}
       propertyPath: m_LocalPosition.z
